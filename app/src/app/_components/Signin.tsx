@@ -3,10 +3,10 @@ import React, { useState, useTransition } from "react";
 import { Lock, Mail, MoveLeft, Coffee } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { LoginSchema } from "../../schemas";
-import { signin } from "@/_actions/signin";
+import { LoginSchema } from "@/schemas";
+import { signin } from "@/app/_actions/signin";
 import { signIn } from "next-auth/react";
-import { DEFAULT_LOGIN_REDIRECT } from "../../routes";
+import { DEFAULT_LOGIN_REDIRECT } from "@/routes";
 
 const LoginPage: React.FC = () => {
   const [email, setEmail] = useState("");

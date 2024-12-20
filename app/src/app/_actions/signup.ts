@@ -1,12 +1,12 @@
 "use server";
 
 import * as z from "zod";
-import { RegisterSchema } from "../../schemas";
-import { getUserByEmail } from "@/_data/user";
-import { db } from "@/lib/db";
-import { signIn } from "../../auth";
-import { DEFAULT_LOGIN_REDIRECT } from "../../routes";
+import { RegisterSchema } from "@/schemas";
+import { signIn } from "@/auth";
+import { DEFAULT_LOGIN_REDIRECT } from "@/routes";
 import { AuthError } from "next-auth";
+import { getUserByEmail } from "@/app/_data/user";
+import { db } from "@/app/lib/db";
 
 export const signup = async (values: z.infer<typeof RegisterSchema>) => {
   const validatedFields = RegisterSchema.safeParse(values);

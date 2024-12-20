@@ -3,8 +3,8 @@ import React, { useState, useTransition } from "react";
 import { Lock, Mail, MoveLeft, User, Coffee, ArrowRight } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { signup } from "@/_actions/signup";
-import { DEFAULT_LOGIN_REDIRECT } from "../../routes";
+import { signup } from "@/app/_actions/signup";
+import { DEFAULT_LOGIN_REDIRECT } from "@/routes";
 import { signIn } from "next-auth/react";
 
 const SignupPage: React.FC = () => {

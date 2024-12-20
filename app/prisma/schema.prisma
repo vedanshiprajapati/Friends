@@ -48,5 +48,3 @@ model Account {
   @@unique([provider, providerAccountId])
   @@map("accounts")
 }
-
-
