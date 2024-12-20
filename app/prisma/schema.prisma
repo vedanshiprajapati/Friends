@@ -17,14 +17,23 @@ model User {
   id            String    @id @default(cuid())
   name          String?
   email         String?   @unique
+  username  String @unique @default(dbgenerated("CONCAT('friend_', substring(gen_random_uuid()::text, 1, 8))"))
   emailVerified DateTime? @map("email_verified")
   image         String?
   password String?
   
   accounts      Account[]
   createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  updatedAt DateTime @updatedAt @default(now())
+ 
+  groupMemberships    GroupMember[]      // Groups the user is part of
+  ownedGroups        Group[]            // Groups created by this user
+  sentMessages       GroupMessage[]          // Messages sent by the user
+  sentDirectMessages DirectMessage[]    @relation("SentDirectMessages")
+  receivedDirectMessages DirectMessage[] @relation("ReceivedDirectMessages")
+  conversationParticipant Conversation[] @relation("ConversationParticipants")
 
+  isPrivate Boolean @default(false)
  
   @@map("users")
 }
@@ -47,4 +56,106 @@ model Account {
  
   @@unique([provider, providerAccountId])
   @@map("accounts")
+}
+
+enum FriendsRole {
+  ROSS
+  RACHEL
+  CHANDLER
+  MONICA
+  JOEY
+  PHOEBE
+}
+
+model Group {
+  id          String       @id @default(cuid())
+  name        String
+  description String?
+  inviteCode  String       @unique @default(cuid()) // For inviting users
+  isPrivate   Boolean      @default(false)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt @default(now())
+  isRandom    Boolean
+  // Relations
+  creator     User         @relation(fields: [creatorId], references: [id])
+  creatorId   String
+  members     GroupMember[]
+  messages    GroupMessage[]
+
+  // Max 6 members constraint is enforced in application logic
+  
+  @@index([inviteCode])
+}
+
+model GroupMember {
+  id        String      @id @default(cuid())
+  role      FriendsRole
+  joinedAt  DateTime    @default(now())
+  isAdmin   Boolean     @default(false)
+
+  // Relations
+  user      User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String
+  group     Group       @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  groupId   String
+
+  @@unique([groupId, role]) // Ensures 6 unique roles per group
+  @@unique([groupId, userId]) // User can't be in same group twice
+  @@index([userId])
+  @@index([groupId])
+}
+
+model GroupMessage {
+  id        String     @id @default(cuid())
+  content   String
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt @default(now())
+  isEdited  Boolean    @default(false)
+
+  // Relations
+  group     Group      @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  groupId   String
+  sender    User       @relation(fields: [senderId], references: [id], onDelete: Cascade)
+  senderId  String
+  
+  // Optional mentions/tags
+  taggedRole FriendsRole?
+  
+  @@index([groupId])
+  @@index([senderId])
+  @@index([createdAt])
+}
+
+model Conversation {
+  id        String    @id @default(cuid())
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt @default(now())
+
+  // Relations
+  participants User[] @relation("ConversationParticipants")
+  messages    DirectMessage[]
+
+  @@index([createdAt])
+}
+
+model DirectMessage {
+  id        String      @id @default(cuid())
+  content   String
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt @default(now())
+  isEdited  Boolean     @default(false)
+  isRead    Boolean     @default(false)
+
+  // Relations
+  conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  conversationId String
+  sender    User    @relation("SentDirectMessages", fields: [senderId], references: [id], onDelete: Cascade)
+  senderId  String
+  receiver  User    @relation("ReceivedDirectMessages", fields: [receiverId], references: [id], onDelete: Cascade)
+  receiverId String
+
+  @@index([conversationId])
+  @@index([senderId])
+  @@index([receiverId])
+  @@index([createdAt])
 }
