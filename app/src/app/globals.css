@@ -4,7 +4,6 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
 :root {
   --background: #ffffff;
   --foreground: #171717;
@@ -12,14 +11,11 @@
   --color-lavender: #e2bfd9;
   --color-purple: #c8a1e0;
   --color-deep-purple: #674188;
+  --color-purple-light-1: #e5cef5; /* Slightly lighter */
+  --color-purple-light-2: #f0e8fa;
 }
+/* #e2d4f2 */
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
 * {
   font-family: "Lexend", sans-serif;
   font-optical-sizing: auto;

@@ -172,7 +172,7 @@ const LoginPage: React.FC = () => {
             <p className="text-sm" style={{ color: "#674188" }}>
               Don't have an account?
               <Link
-                href="/signup"
+                href="/auth/signup"
                 className="font-bold ml-2"
                 style={{ color: "#674188" }}
               >

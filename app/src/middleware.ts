@@ -12,7 +12,6 @@ export default auth((req) => {
   console.log("IN MIDDLEWARE");
   const { nextUrl } = req;
   const isLoggedin = !!req.auth;
-
   const isAPIAuthRoute = nextUrl.pathname.startsWith(apiAuthPrefix);
   const ispublicRoute = publicRoutes.includes(nextUrl.pathname);
   const isAuthRoute = authRoutes.includes(nextUrl.pathname);
@@ -27,7 +26,6 @@ export default auth((req) => {
       return;
     }
   }
-
   if (!isLoggedin && !ispublicRoute) {
     return Response.redirect(new URL("/auth/signin", nextUrl));
   }

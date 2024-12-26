@@ -12,7 +12,7 @@ export default {
       clientSecret: process.env.GOOGLE_SECRET,
       async profile(profile) {
         const existingUser = await getUserByEmail(profile.email);
-
+        console.log(existingUser, "get user by idd");
         // If user exists but only with credentials, throw an error
         // !existingUser.accounts.some(acc => acc.provider === 'google')
         if (existingUser && existingUser.password) {

@@ -16,6 +16,6 @@ export const getUserById = async (id: string) => {
     console.log(user, "user mila in getuserbyid function");
     return user;
   } catch {
-    return null;
+    return { error: "Can't find the user" };
   }
 };

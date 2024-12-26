@@ -10,44 +10,7 @@ import {
   ArrowRight,
 } from "lucide-react";
 import Link from "next/link";
-const FRIENDS_CHARACTERS = [
-  {
-    name: "Ross",
-    avatar: "/ross.png",
-    quote: "We were on a break!",
-    backgroundColor: "#674188",
-  },
-  {
-    name: "Rachel",
-    avatar: "/rachel.png",
-    quote: "No uterus, no opinion.",
-    backgroundColor: "#C8A1E0",
-  },
-  {
-    name: "Chandler",
-    avatar: "/chandler.png",
-    quote: "Could I BE any more sarcastic?",
-    backgroundColor: "#E2BFD9",
-  },
-  {
-    name: "Monica",
-    avatar: "/monica.png",
-    quote: "I know!",
-    backgroundColor: "#674188",
-  },
-  {
-    name: "Joey",
-    avatar: "/joey.png",
-    quote: "How you doin'?",
-    backgroundColor: "#C8A1E0",
-  },
-  {
-    name: "Phoebe",
-    avatar: "/pheobe.png",
-    quote: "Oh. My. God.",
-    backgroundColor: "#E2BFD9",
-  },
-];
+import { FRIENDS_CHARACTERS } from "@/app/_data/constants";
 
 const FriendsLandingPage: React.FC = () => {
   const [activeSection, setActiveSection] = useState<
@@ -58,106 +21,79 @@ const FriendsLandingPage: React.FC = () => {
   );
   return (
     <div
-      className="min-h-screen flex flex-col"
+      className="min-h-screen flex flex-col bg-cream"
       style={{
-        backgroundColor: "#F7EFE5",
         fontFamily: "'Arial', sans-serif",
       }}
     >
       {/* Navigation */}
-      <header className="flex justify-between items-center p-6">
-        <div className="flex items-center">
-          <MessageCircle size={40} color="#674188" className="mr-4" />
-          <h1 className="text-3xl font-bold" style={{ color: "#674188" }}>
-            Friends Chat
-          </h1>
+      <header className="flex justify-between items-center py-3 px-6">
+        <div className="flex items-center ">
+          <MessageCircle size={40} className="mr-2 text-deepPurple" />
+          <h1 className="text-2xl font-bold text-deepPurple">Friends Chat</h1>
         </div>
-        <nav className="flex space-x-6">
-          <Link href={"/auth/signin"}>
-            <button
-              className="px-4 py-2 rounded-full"
-              style={{
-                backgroundColor: "#674188",
-                color: "#F7EFE5",
-              }}
-            >
-              Sign In
-            </button>
-          </Link>
-          <Link href={"/auth/signup"}>
-            <button
-              className="px-4 py-2 rounded-full"
-              style={{
-                backgroundColor: "#E2BFD9",
-                color: "#674188",
-              }}
-            >
-              Sign Up
-            </button>
-          </Link>
-        </nav>
+        <div>
+          <nav className="flex space-x-6 bg-cream">
+            <Link href={"/auth/signin"} className="border-none">
+              <button className="flex items-center px-4 py-2 shadow-none text-cream bg-deepPurple">
+                Sign In
+              </button>
+            </Link>
+            <Link href={"/auth/signup"} className="border-none">
+              <button className="px-4 py-2 bg-lavender text-deepPurple">
+                Sign Up
+              </button>
+            </Link>
+          </nav>
+        </div>
       </header>
 
       {/* Hero Section */}
-      <main className="flex-grow container mx-auto px-6 py-12 grid md:grid-cols-2 gap-12 items-center">
+      <div className="flex justify-between  p-12 items-center">
         {/* Left Side - Text Content */}
-        <div>
-          <h1 className="text-5xl font-bold mb-6" style={{ color: "#674188" }}>
-            CHAT LIKE YOU'RE IN CENTRAL PERK
-          </h1>
-          <p className="text-xl mb-8" style={{ color: "#674188" }}>
-            Join your favorite Friends character's group and experience the most
-            nostalgic chat experience ever!
-          </p>
+        <div className="block w-1/2">
+          <div className="">
+            <h1 className="text-4xl font-bold mb-6 text-deepPurple">
+              CHAT LIKE YOU'RE IN CENTRAL PERK
+            </h1>
+            <p className="text-xl mb-8 text-deepPurple">
+              Join your favorite Friends character's group and experience the
+              most nostalgic chat experience ever!
+            </p>
 
-          {/* Call to Action Buttons */}
-          <div className="flex space-x-4">
-            <button
-              className="flex items-center px-6 py-3 rounded-full text-lg font-bold"
-              style={{
-                backgroundColor: "#674188",
-                color: "#F7EFE5",
-              }}
-            >
-              Get Started <ArrowRight className="ml-2" />
-            </button>
-
-            <Link
-              href={"https://www.netflix.com/in/title/70153404"}
-              target="_blank"
-            >
-              <button
-                className="flex items-center px-6 py-3 rounded-full text-lg"
-                style={{
-                  backgroundColor: "#E2BFD9",
-                  color: "#674188",
-                }}
+            {/* Call to Action Buttons */}
+            <div className="flex space-x-4">
+              <Link className="border-none" href={"/auth/signin"}>
+                <button className="flex items-center px-6 py-3  text-lg font-bold text-cream bg-deepPurple">
+                  Get Started <ArrowRight className="ml-2" />
+                </button>
+              </Link>
+              <Link
+                href={"https://www.netflix.com/in/title/70153404"}
+                target="_blank"
+                className="border-none"
               >
-                <PlayCircle className="mr-2" /> Watch Trailer
-              </button>
-            </Link>
+                <button className="flex items-center px-6 py-3  text-lg font-bold  bg-lavender text-deepPurple">
+                  Watch Trailer <PlayCircle className="mr-2" />
+                </button>
+              </Link>
+            </div>
           </div>
         </div>
 
         {/* Right Side - Illustration */}
-        <div className="flex justify-center items-center">
-          <div
-            className="w-full max-w-md h-96 rounded-xl flex items-center justify-center"
-            style={{
-              backgroundColor: "#C8A1E0",
-              border: "4px solid #674188",
-            }}
-          >
+        <div className="block mr-6">
+          <div className="w-full max-w-md h-96 rounded-xl flex items-center justify-center bg-purple border-4 border-deepPurple px-8">
             <Image
               src={"/landingPage.png"}
               alt="ross"
-              className="rounded-xl w-auto"
+              className="rounded-xl border w-auto"
               width={400}
               height={300}
             />
           </div>
         </div>
-      </main>
+      </div>
 
       <div className="grid grid-cols-3 gap-8 px-6 py-12">
         {FRIENDS_CHARACTERS.map((character) => (
@@ -166,7 +102,7 @@ const FriendsLandingPage: React.FC = () => {
             className={`
                 rounded-xl p-6 text-center cursor-pointer 
                 transform transition-all duration-300 
-                hover:scale-105 
+                hover:scale-105 text-cream
                 ${
                   selectedCharacter === character.name
                     ? "ring-4 ring-offset-2"
@@ -176,7 +112,6 @@ const FriendsLandingPage: React.FC = () => {
             style={{
               backgroundColor: character.backgroundColor,
               borderColor: "#674188",
-              color: "#F7EFE5",
             }}
             onClick={() => setSelectedCharacter(character.name)}
           >
@@ -199,7 +134,7 @@ const FriendsLandingPage: React.FC = () => {
       </div>
 
       {/* Features Section */}
-      <section className="py-16 px-6" style={{ backgroundColor: "#E2BFD9" }}>
+      <section className="py-16 px-6 bg-lavender">
         <div className="container mx-auto">
           <h3
             className="text-4xl text-center mb-12"
@@ -211,9 +146,8 @@ const FriendsLandingPage: React.FC = () => {
           <div className="grid md:grid-cols-3 gap-8">
             {/* Feature 1 */}
             <div
-              className="p-6 rounded-xl text-center"
+              className="p-6 rounded-xl text-center bg-cream"
               style={{
-                backgroundColor: "#F7EFE5",
                 color: "#674188",
               }}
             >
@@ -229,9 +163,8 @@ const FriendsLandingPage: React.FC = () => {
 
             {/* Feature 2 */}
             <div
-              className="p-6 rounded-xl text-center"
+              className="p-6 rounded-xl text-center bg-cream"
               style={{
-                backgroundColor: "#F7EFE5",
                 color: "#674188",
               }}
             >
@@ -245,9 +178,8 @@ const FriendsLandingPage: React.FC = () => {
 
             {/* Feature 3 */}
             <div
-              className="p-6 rounded-xl text-center"
+              className="p-6 rounded-xl text-center bg-cream"
               style={{
-                backgroundColor: "#F7EFE5",
                 color: "#674188",
               }}
             >
@@ -262,10 +194,7 @@ const FriendsLandingPage: React.FC = () => {
       </section>
 
       {/* Footer */}
-      <footer
-        className="p-6 text-center"
-        style={{ backgroundColor: "#C8A1E0" }}
-      >
+      <footer className="p-6 text-center bg-purple">
         <p className="text-sm" style={{ color: "#674188" }}>
           © 2024 Friends Chat. Could we BE any more social?
         </p>

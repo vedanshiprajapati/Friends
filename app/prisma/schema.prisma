@@ -26,9 +26,9 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt @default(now())
  
-  groupMemberships    GroupMember[]      // Groups the user is part of
-  ownedGroups        Group[]            // Groups created by this user
-  sentMessages       GroupMessage[]          // Messages sent by the user
+  spaceMemberships    SpaceMember[]      // spaces the user is part of
+  ownedspaces        Space[]            // spaces created by this user
+  sentMessages       SpaceMessage[]          // Messages sent by the user
   sentDirectMessages DirectMessage[]    @relation("SentDirectMessages")
   receivedDirectMessages DirectMessage[] @relation("ReceivedDirectMessages")
   conversationParticipant Conversation[] @relation("ConversationParticipants")
@@ -67,7 +67,7 @@ enum FriendsRole {
   PHOEBE
 }
 
-model Group {
+model Space {
   id          String       @id @default(cuid())
   name        String
   description String?
@@ -79,15 +79,15 @@ model Group {
   // Relations
   creator     User         @relation(fields: [creatorId], references: [id])
   creatorId   String
-  members     GroupMember[]
-  messages    GroupMessage[]
+  members     SpaceMember[]
+  messages    SpaceMessage[]
 
   // Max 6 members constraint is enforced in application logic
   
   @@index([inviteCode])
 }
 
-model GroupMember {
+model SpaceMember {
   id        String      @id @default(cuid())
   role      FriendsRole
   joinedAt  DateTime    @default(now())
@@ -96,16 +96,16 @@ model GroupMember {
   // Relations
   user      User        @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId    String
-  group     Group       @relation(fields: [groupId], references: [id], onDelete: Cascade)
-  groupId   String
+  space     Space       @relation(fields: [spaceId], references: [id], onDelete: Cascade)
+  spaceId   String
 
-  @@unique([groupId, role]) // Ensures 6 unique roles per group
-  @@unique([groupId, userId]) // User can't be in same group twice
+  @@unique([spaceId, role]) // Ensures 6 unique roles per space
+  @@unique([spaceId, userId]) // User can't be in same space twice
   @@index([userId])
-  @@index([groupId])
+  @@index([spaceId])
 }
 
-model GroupMessage {
+model SpaceMessage {
   id        String     @id @default(cuid())
   content   String
   createdAt DateTime   @default(now())
@@ -113,15 +113,15 @@ model GroupMessage {
   isEdited  Boolean    @default(false)
 
   // Relations
-  group     Group      @relation(fields: [groupId], references: [id], onDelete: Cascade)
-  groupId   String
+  space     Space      @relation(fields: [spaceId], references: [id], onDelete: Cascade)
+  spaceId   String
   sender    User       @relation(fields: [senderId], references: [id], onDelete: Cascade)
   senderId  String
   
   // Optional mentions/tags
   taggedRole FriendsRole?
   
-  @@index([groupId])
+  @@index([spaceId])
   @@index([senderId])
   @@index([createdAt])
 }
