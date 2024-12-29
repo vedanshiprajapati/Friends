@@ -29,6 +29,7 @@ export async function GET(req: Request, res: NextApiResponse) {
         isPrivate: true,
       },
     });
+
     return NextResponse.json(
       {
         status: "success",

@@ -12,6 +12,7 @@ export const signin = async (
   callbackUrl?: string | null
 ) => {
   console.log("custom signin function me");
+
   const validatedFields = LoginSchema.safeParse(values);
   if (!validatedFields.success) {
     return { error: "Invalidated fields" };
@@ -20,6 +21,7 @@ export const signin = async (
   const { email, password, code } = validatedFields.data;
 
   const existingUser = await getUserByEmail(email);
+
   if (!existingUser || !existingUser.email || !existingUser.password) {
     return {
       error: "Email does not exist! / Pls. sign in with Google Provider!",

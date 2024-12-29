@@ -1,36 +1,50 @@
+"use client";
+
+import { mergeClassNames } from "@/app/lib/util";
 import React from "react";
 
-interface AvatarProps {
-  src?: string | null;
-  alt?: string | null;
-  fallback?: string | null;
-  size?: number; // Default size is 40
-}
+const Avatar = React.forwardRef<
+  HTMLDivElement,
+  React.HTMLAttributes<HTMLDivElement>
+>(({ className, ...props }, ref) => (
+  <div
+    ref={ref}
+    className={mergeClassNames(
+      "relative flex h-10 w-10 shrink-0 overflow-hidden rounded-full",
+      className
+    )}
+    {...props}
+  />
+));
+Avatar.displayName = "Avatar";
 
-const Avatar: React.FC<AvatarProps> = ({
-  src,
-  alt,
-  fallback = "?",
-  size = 40,
-}) => {
-  return (
-    <div
-      className="relative rounded-full overflow-hidden bg-deepPurple flex items-center justify-center"
-      style={{ width: size, height: size }}
-    >
-      {src ? (
-        <img
-          src={src}
-          alt={alt || "Avatar"}
-          className="w-full h-full object-cover"
-        />
-      ) : (
-        <span className="text-cream font-medium ">
-          {fallback && fallback[0].toUpperCase()}
-        </span>
-      )}
-    </div>
-  );
-};
+const AvatarImage = React.forwardRef<
+  HTMLImageElement,
+  React.ImgHTMLAttributes<HTMLImageElement>
+>(({ className, ...props }, ref) => (
+  <img
+    ref={ref}
+    className={mergeClassNames("aspect-square h-full w-full", className)}
+    {...props}
+  />
+));
+AvatarImage.displayName = "AvatarImage";
 
-export default Avatar;
+const AvatarFallback = React.forwardRef<
+  HTMLDivElement,
+  React.HTMLAttributes<HTMLDivElement>
+>(({ className, children, ...props }, ref) => (
+  <div
+    ref={ref}
+    className={mergeClassNames(
+      "flex h-full w-full items-center justify-center rounded-full bg-deepPurple text-cream",
+      className
+    )}
+    {...props}
+  >
+    {children}
+  </div>
+));
+AvatarFallback.displayName = "AvatarFallback";
+
+export { Avatar, AvatarImage, AvatarFallback };

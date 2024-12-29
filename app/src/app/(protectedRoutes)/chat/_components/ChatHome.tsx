@@ -9,22 +9,19 @@ import {
   User,
   LogOut,
 } from "lucide-react";
-import useRoutes from "@/app/hooks/useRoutes";
-import { SidebarItem } from "@/app/(protectedRoutes)/chat/_components/SidebarItem";
-import { CollapsibleSection } from "@/app/(protectedRoutes)/chat/_components/CollapsibleSection";
 import { NewChatDropdown } from "@/app/(protectedRoutes)/chat/_components/NewChatDropDown";
-import Avatar from "@/app/_components/ui/Avatar";
-import { useSession } from "next-auth/react";
+import { SpaceCollapsibleSection } from "@/app/(protectedRoutes)/chat/_components/CollapsibleSection/SpaceCollapsibleSection";
+import { DmCollapsibleSection } from "@/app/(protectedRoutes)/chat/_components/CollapsibleSection/DmCollapsibleSection";
+import { ShortCutCollapsibleSection } from "@/app/(protectedRoutes)/chat/_components/CollapsibleSection/ShortCutCollapsibleSection";
+import { CurrentUserAvatar } from "@/app/_components/CurrentUserAvatar";
+import { Avatar, AvatarImage } from "@/app/_components/ui/Avatar";
 
 // Main Component
 const ChatHome = ({ children }: { children: ReactNode }) => {
-  const { data } = useSession();
-  const routes = useRoutes();
-
   return (
-    <div className="flex h-screen bg-cream ">
+    <div className="flex h-screen">
       {/* Sidebar */}
-      <div className="w-1/5 bg-white border-r border-lavender flex flex-col">
+      <div className="w-1/5 border-r border-lavender flex flex-col bg-lightCream">
         {/* New Chat Button */}
         <div className="flex mt-4">
           <Menu
@@ -44,48 +41,16 @@ const ChatHome = ({ children }: { children: ReactNode }) => {
 
         {/* Sidebar Navigation */}
         <div className="flex-1 overflow-y-auto">
-          <CollapsibleSection title="shortcuts">
-            {routes.map((item) => {
-              return (
-                <SidebarItem
-                  key={item.href}
-                  icon={item.icon}
-                  label={item.label}
-                  active={item.active}
-                  href={item.href}
-                />
-              );
-            })}
-          </CollapsibleSection>
-          <CollapsibleSection title="Direct messages">
-            {["Rachel Green", "Monica Geller", "Phoebe Buffay"].map((name) => (
-              <div
-                key={name}
-                className="pl-6 py-2 cursor-pointer text-sm text-deepPurple hover:bg-[#e5cef5] rounded-full"
-                onClick={() => {}}
-              >
-                {name}
-              </div>
-            ))}
-          </CollapsibleSection>
-
-          <CollapsibleSection title="Spaces">
-            {["Central Perk", "Apartment 20", "Joeys Place"].map((space) => (
-              <div
-                key={space}
-                className="pl-6 py-2 cursor-pointer text-sm text-deepPurple hover:bg-[#e5cef5] rounded-full"
-              >
-                {space}
-              </div>
-            ))}
-          </CollapsibleSection>
+          <ShortCutCollapsibleSection />
+          <DmCollapsibleSection />
+          <SpaceCollapsibleSection />
         </div>
       </div>
 
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col">
         {/* Header */}
-        <div className="h-14 border-b border-lavender flex items-center px-4 bg-white">
+        <div className="h-14 border-b border-lavender flex items-center px-4 bg-lightCream">
           <div className="flex-1">
             <div className="max-w-xl">
               <div className="relative">
@@ -115,11 +80,7 @@ const ChatHome = ({ children }: { children: ReactNode }) => {
           <div className="flex items-center space-x-4">
             <Settings size={20} className="text-deepPurple cursor-pointer" />
             <HelpCircle size={20} className="text-deepPurple cursor-pointer" />
-            <Avatar
-              src={data?.user?.image}
-              fallback={data?.user?.name}
-              alt={data?.user?.name}
-            />
+            <CurrentUserAvatar />
           </div>
         </div>
 

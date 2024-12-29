@@ -1,5 +1,6 @@
 import type { Config } from "tailwindcss";
 
+// --color-light-cream: #fcf8f2;
 // --color-cream: #f7efe5;
 // --color-lavender: #e2bfd9;
 // --color-purple: #c8a1e0;
@@ -18,6 +19,7 @@ export default {
       colors: {
         background: "var(--background)",
         foreground: "var(--foreground)",
+        lightCream: "var(--color-light-cream)",
         cream: "var(--color-cream)",
         lavender: "var(--color-lavender)",
         lightPurple2: "var(--color-purple-light-2)",

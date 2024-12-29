@@ -15,14 +15,17 @@ export async function GET(req: Request, res: NextApiResponse) {
   const userId = token?.sub;
 
   try {
-    const dms = await db.directMessage.findMany({
+    const conversations = await db.conversation.findMany({
       where: {
-        OR: [{ senderId: userId }, { receiverId: userId }],
+        participants: {
+          some: {
+            id: userId,
+          },
+        },
       },
-      distinct: ["conversationId"], // Get only unique conversations
       select: {
-        conversationId: true,
-        receiver: {
+        id: true,
+        participants: {
           select: {
             id: true,
             name: true,
@@ -30,21 +33,31 @@ export async function GET(req: Request, res: NextApiResponse) {
             image: true,
           },
         },
-        sender: {
+        messages: {
+          take: 1, // Fetch the latest message
+          orderBy: {
+            createdAt: "desc",
+          },
           select: {
-            id: true,
-            name: true,
-            username: true,
-            image: true,
+            content: true,
+            createdAt: true,
           },
         },
       },
     });
 
-    const minimalDMs = dms.map((dm) => ({
-      id: dm.conversationId,
-      user: dm.receiver?.id === userId ? dm.sender : dm.receiver, // Opposite user
-    }));
+    const minimalDMs = conversations.map((conversation) => {
+      // Determine the other user in the conversation
+      const otherUser = conversation.participants.find(
+        (participant) => participant.id !== userId
+      );
+
+      return {
+        id: conversation.id,
+        user: otherUser,
+        // latestMessage: conversation.messages[0] || null, // Latest message if available
+      };
+    });
 
     return NextResponse.json(
       {

@@ -64,7 +64,7 @@ export const NewChatDropdown = () => {
       {isOpen && (
         <div
           ref={dropdownRef}
-          className="absolute top-0 w-64 left-full ml-2 bg-white border border-lavender z-1 text-deepPurple"
+          className="absolute top-0 w-64 h-64 left-full ml-2 bg-white border border-lavender z-1 text-deepPurple"
         >
           <div className="p-2">
             {DropdownOptions.map((item) => {

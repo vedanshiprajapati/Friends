@@ -2,7 +2,7 @@ import { usePathname } from "next/navigation";
 
 import useConversationGroup from "./useConversationGroup";
 import { useMemo } from "react";
-import { AtSign, Home, Star } from "lucide-react";
+import { AtSign, Compass, Home, Star } from "lucide-react";
 
 const useRoutes = () => {
   const pathname = usePathname();
@@ -16,13 +16,19 @@ const useRoutes = () => {
         active: pathname === "/chat/home",
       },
       {
-        label: "mentions",
+        label: "Explore",
+        icon: Compass,
+        href: "/chat/explore",
+        active: pathname === "/chat/explore",
+      },
+      {
+        label: "Mentions",
         icon: AtSign,
         href: "/chat/mentions",
         active: pathname === "/chat/mentions",
       },
       {
-        label: "starred",
+        label: "Starred",
         icon: Star,
         href: "/chat/starred",
         active: pathname === "/chat/starred",

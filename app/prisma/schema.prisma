@@ -70,6 +70,7 @@ enum FriendsRole {
 model Space {
   id          String       @id @default(cuid())
   name        String
+  image String?
   description String?
   inviteCode  String       @unique @default(cuid()) // For inviting users
   isPrivate   Boolean      @default(false)
@@ -111,7 +112,7 @@ model SpaceMessage {
   createdAt DateTime   @default(now())
   updatedAt DateTime   @updatedAt @default(now())
   isEdited  Boolean    @default(false)
-
+  image    String?
   // Relations
   space     Space      @relation(fields: [spaceId], references: [id], onDelete: Cascade)
   spaceId   String
@@ -145,7 +146,7 @@ model DirectMessage {
   updatedAt DateTime    @updatedAt @default(now())
   isEdited  Boolean     @default(false)
   isRead    Boolean     @default(false)
-
+  image String?
   // Relations
   conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
   conversationId String
