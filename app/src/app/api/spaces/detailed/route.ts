@@ -33,9 +33,7 @@ export async function GET(req: Request, res: NextApiResponse) {
             sender: {
               select: {
                 id: true,
-                name: true,
-                username: true,
-                image: true,
+                role: true,
               },
             },
           },

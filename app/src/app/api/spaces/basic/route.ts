@@ -1,6 +1,6 @@
 // /pages/api/groups/basic/route.ts
 import { db } from "@/app/lib/db";
-import { NextApiRequest, NextApiResponse } from "next";
+import { NextApiResponse } from "next";
 import { getToken } from "next-auth/jwt";
 import { NextResponse } from "next/server";
 

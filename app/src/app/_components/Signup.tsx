@@ -1,35 +1,49 @@
 "use client";
-import React, { useState, useTransition } from "react";
+import React, { useState } from "react";
 import { Lock, Mail, MoveLeft, User, Coffee, ArrowRight } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { useForm, SubmitHandler } from "react-hook-form";
 import { signup } from "@/app/_actions/signup";
 import { DEFAULT_LOGIN_REDIRECT } from "@/routes";
 import { signIn } from "next-auth/react";
+import { useMutation } from "@tanstack/react-query";
+
+type SignupFormInputs = {
+  email: string;
+  password: string;
+  name: string;
+};
 
 const SignupPage: React.FC = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [name, setName] = useState("");
-  const [isPending, startTransition] = useTransition();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm<SignupFormInputs>();
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    console.log("signup attempted", { email, password, name });
-    startTransition(() => {
-      signup({ email, password, name }).then((data) => {
-        if (data.error)
-          console.log(
-            "Errrorrr while signing up HandleSubmit function",
-            data.error
-          );
-      });
-    });
+  const signupMutation = useMutation({
+    mutationFn: (data: SignupFormInputs) => signup(data),
+    onSuccess: (data) => {
+      if (data.error) {
+        console.error("Error while signing up:", data.error);
+      } else {
+        console.log("Signup successful!");
+      }
+    },
+    onError: (error) => {
+      console.error("Error while signing up:", error);
+    },
+  });
+
+  const onSubmit: SubmitHandler<SignupFormInputs> = (data) => {
+    signupMutation.mutate(data);
   };
 
   const SigninWithGoogle = () => {
     signIn("google", { callbackUrl: DEFAULT_LOGIN_REDIRECT });
   };
+
   return (
     <div
       className="min-h-screen flex"
@@ -67,7 +81,7 @@ const SignupPage: React.FC = () => {
             Join the Gang
           </h1>
 
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
             <div className="relative">
               <Mail
                 className="absolute left-3 top-1/2 transform -translate-y-1/2"
@@ -76,10 +90,8 @@ const SignupPage: React.FC = () => {
               <input
                 type="email"
                 placeholder="Email(Required)"
-                value={email}
-                disabled={isPending}
-                onChange={(e) => setEmail(e.target.value)}
-                required
+                {...register("email", { required: "Email is required" })}
+                disabled={isSubmitting}
                 className="w-full pl-10 pr-4 py-3 rounded-lg"
                 style={{
                   backgroundColor: "#F7EFE5",
@@ -87,6 +99,11 @@ const SignupPage: React.FC = () => {
                   border: "2px solid #674188",
                 }}
               />
+              {errors.email && (
+                <p className="text-red-500 text-sm mt-1">
+                  {errors.email.message}
+                </p>
+              )}
             </div>
 
             <div className="relative">
@@ -97,10 +114,8 @@ const SignupPage: React.FC = () => {
               <input
                 type="text"
                 placeholder="Name(Required)"
-                value={name}
-                required
-                onChange={(e) => setName(e.target.value)}
-                disabled={isPending}
+                {...register("name", { required: "Name is required" })}
+                disabled={isSubmitting}
                 className="w-full pl-10 pr-4 py-3 rounded-lg"
                 style={{
                   backgroundColor: "#F7EFE5",
@@ -108,6 +123,11 @@ const SignupPage: React.FC = () => {
                   border: "2px solid #674188",
                 }}
               />
+              {errors.name && (
+                <p className="text-red-500 text-sm mt-1">
+                  {errors.name.message}
+                </p>
+              )}
             </div>
 
             <div className="relative">
@@ -118,10 +138,8 @@ const SignupPage: React.FC = () => {
               <input
                 type="password"
                 placeholder="Password(Required)"
-                value={password}
-                disabled={isPending}
-                onChange={(e) => setPassword(e.target.value)}
-                required
+                {...register("password", { required: "Password is required" })}
+                disabled={isSubmitting}
                 className="w-full pl-10 pr-4 py-3 rounded-lg"
                 style={{
                   backgroundColor: "#F7EFE5",
@@ -129,18 +147,23 @@ const SignupPage: React.FC = () => {
                   border: "2px solid #674188",
                 }}
               />
+              {errors.password && (
+                <p className="text-red-500 text-sm mt-1">
+                  {errors.password.message}
+                </p>
+              )}
             </div>
 
             <button
               type="submit"
-              disabled={isPending}
+              disabled={isSubmitting}
               className="w-full py-3 rounded-lg font-bold transition-all duration-300 hover:scale-105"
               style={{
                 backgroundColor: "#674188",
                 color: "#F7EFE5",
               }}
             >
-              {isPending ? "Loading..." : "Sign up"}
+              {isSubmitting ? "Loading..." : "Sign up"}
             </button>
           </form>
           <div className="flex items-center my-6">
@@ -155,7 +178,7 @@ const SignupPage: React.FC = () => {
               backgroundColor: "#674188",
               color: "#F7EFE5",
             }}
-            onClick={() => SigninWithGoogle()}
+            onClick={SigninWithGoogle}
           >
             <p className="px-2">Sign up with </p>
             <Image

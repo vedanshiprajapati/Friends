@@ -21,14 +21,14 @@ model User {
   emailVerified DateTime? @map("email_verified")
   image         String?
   password String?
-  
+  isActive Boolean @default(false)
   accounts      Account[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt @default(now())
  
   spaceMemberships    SpaceMember[]      // spaces the user is part of
-  ownedspaces        Space[]            // spaces created by this user
-  sentMessages       SpaceMessage[]          // Messages sent by the user
+  ownedspaces        Space[]            // spaces created by this user 
+
   sentDirectMessages DirectMessage[]    @relation("SentDirectMessages")
   receivedDirectMessages DirectMessage[] @relation("ReceivedDirectMessages")
   conversationParticipant Conversation[] @relation("ConversationParticipants")
@@ -93,6 +93,7 @@ model SpaceMember {
   role      FriendsRole
   joinedAt  DateTime    @default(now())
   isAdmin   Boolean     @default(false)
+  messages  SpaceMessage[]
 
   // Relations
   user      User        @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -107,23 +108,24 @@ model SpaceMember {
 }
 
 model SpaceMessage {
-  id        String     @id @default(cuid())
-  content   String
-  createdAt DateTime   @default(now())
-  updatedAt DateTime   @updatedAt @default(now())
-  isEdited  Boolean    @default(false)
-  image    String?
-  // Relations
-  space     Space      @relation(fields: [spaceId], references: [id], onDelete: Cascade)
-  spaceId   String
-  sender    User       @relation(fields: [senderId], references: [id], onDelete: Cascade)
-  senderId  String
+  id          String      @id @default(cuid())
+  content     String
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt @default(now())
+  isEdited    Boolean     @default(false)
+  isReadList  String[]    @default([])
+  image       String?
   
-  // Optional mentions/tags
-  taggedRole FriendsRole?
+  space       Space       @relation(fields: [spaceId], references: [id], onDelete: Cascade)
+  spaceId     String
   
+  sender      SpaceMember @relation(fields: [spaceMemberId], references: [id], onDelete: Cascade)
+  spaceMemberId String
+  
+  taggedRole  FriendsRole?
+
   @@index([spaceId])
-  @@index([senderId])
+  @@index([spaceMemberId])
   @@index([createdAt])
 }
 
@@ -131,27 +133,27 @@ model Conversation {
   id        String    @id @default(cuid())
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt @default(now())
-
   // Relations
   participants User[] @relation("ConversationParticipants")
   messages    DirectMessage[]
 
   @@index([createdAt])
 }
-
 model DirectMessage {
   id        String      @id @default(cuid())
   content   String
   createdAt DateTime    @default(now())
   updatedAt DateTime    @updatedAt @default(now())
   isEdited  Boolean     @default(false)
-  isRead    Boolean     @default(false)
+  isReadList String[]  @default([])
   image String?
   // Relations
   conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
   conversationId String
+ 
   sender    User    @relation("SentDirectMessages", fields: [senderId], references: [id], onDelete: Cascade)
   senderId  String
+  
   receiver  User    @relation("ReceivedDirectMessages", fields: [receiverId], references: [id], onDelete: Cascade)
   receiverId String
 

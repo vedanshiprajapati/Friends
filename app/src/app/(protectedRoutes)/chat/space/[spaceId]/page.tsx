@@ -1,17 +1,12 @@
 import { getIndividualSpace } from "@/app/_actions/getIndividualSpace";
 import DynamicChatBox from "../../_components/Chatbox/DynamicChatBox";
+import SpaceChatBox from "@/app/(protectedRoutes)/chat/space/_components/SpaceChatBox";
 
 interface Iparams {
   spaceId: string;
 }
 
-export default function ({ params }: { params: Iparams }) {
-  const { spaceId } = params;
-  return (
-    <DynamicChatBox
-      fetchFn={getIndividualSpace}
-      chatType="space"
-      id={spaceId}
-    />
-  );
+export default async function ({ params }: { params: Promise<Iparams> }) {
+  const { spaceId } = await params;
+  return <SpaceChatBox id={spaceId} />;
 }

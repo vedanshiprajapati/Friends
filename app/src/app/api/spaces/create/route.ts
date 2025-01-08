@@ -15,7 +15,7 @@ export async function POST(req: Request, res: NextApiResponse) {
 
   const userId = token.sub;
   try {
-    const { name, description, isPrivate, isRandom } = await req.json();
+    const { name, description, isPrivate, isRandom, role } = await req.json();
 
     const group = await db.space.create({
       data: {
@@ -25,7 +25,7 @@ export async function POST(req: Request, res: NextApiResponse) {
         isRandom,
         creatorId: userId,
         members: {
-          create: { userId, role: "ROSS", isAdmin: true },
+          create: { userId, role: role, isAdmin: true },
         },
       },
     });

@@ -85,7 +85,7 @@ const ChatHome = ({ children }: { children: ReactNode }) => {
         </div>
 
         {/* Content */}
-        <div className="flex-1 justify-center items-center p-4">
+        <div className="flex-1 justify-center items-center">
           {/* {selectedChat ? (
             <ChatBox
               chatName={selectedChat.name}

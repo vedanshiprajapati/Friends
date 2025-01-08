@@ -1,0 +1,9 @@
+which routes i am not using
+
+/api/dm/basic
+/api/dm/detailed
+/api/dm/individual/:id
+/api/space/basic
+/api/space/detailed
+/api/space/individual/:id
+

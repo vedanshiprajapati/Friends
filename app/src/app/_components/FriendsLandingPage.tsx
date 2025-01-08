@@ -1,6 +1,4 @@
-"use client";
-
-import React, { useState } from "react";
+import React from "react";
 import Image from "next/image";
 import {
   MessageCircle,
@@ -13,12 +11,9 @@ import Link from "next/link";
 import { FRIENDS_CHARACTERS } from "@/app/_data/constants";
 
 const FriendsLandingPage: React.FC = () => {
-  const [activeSection, setActiveSection] = useState<
-    "concept" | "features" | "how-it-works"
-  >("concept");
-  const [selectedCharacter, setSelectedCharacter] = useState<string | null>(
-    null
-  );
+  // const [selectedCharacter, setSelectedCharacter] = useState<string | null>(
+  //   null
+  // );
   return (
     <div
       className="min-h-screen flex flex-col bg-cream"
@@ -103,17 +98,13 @@ const FriendsLandingPage: React.FC = () => {
                 rounded-xl p-6 text-center cursor-pointer 
                 transform transition-all duration-300 
                 hover:scale-105 text-cream
-                ${
-                  selectedCharacter === character.name
-                    ? "ring-4 ring-offset-2"
-                    : ""
-                }
+              
               `}
             style={{
               backgroundColor: character.backgroundColor,
               borderColor: "#674188",
             }}
-            onClick={() => setSelectedCharacter(character.name)}
+            // onClick={() => setSelectedCharacter(character.name)}
           >
             {/* <img
               src={character.avatar}
@@ -204,3 +195,14 @@ const FriendsLandingPage: React.FC = () => {
 };
 
 export default FriendsLandingPage;
+
+// className={`
+//   rounded-xl p-6 text-center cursor-pointer
+//   transform transition-all duration-300
+//   hover:scale-105 text-cream
+//   ${
+//     selectedCharacter === character.name
+//       ? "ring-4 ring-offset-2"
+//       : ""
+//   }
+// `}

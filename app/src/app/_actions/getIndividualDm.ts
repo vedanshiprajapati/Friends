@@ -31,12 +31,18 @@ export const getIndividualDm = async (conversationId: string) => {
               select: {
                 name: true,
                 username: true,
+                image: true,
+                id: true,
+                isPrivate: true,
               },
             },
             receiver: {
               select: {
                 name: true,
                 username: true,
+                image: true,
+                id: true,
+                isPrivate: true,
               },
             },
           },

@@ -1,11 +1,10 @@
 import { db } from "@/app/lib/db";
 import { getToken } from "next-auth/jwt";
 import { NextResponse } from "next/server";
-
-export async function GET(
-  req: Request,
-  context: { params: { spaceId: string } }
-) {
+interface Iparams {
+  spaceId: string;
+}
+export async function GET(req: Request, context: { params: Promise<Iparams> }) {
   console.log("in get function");
   const token = await getToken({ req: req, secret: process.env.AUTH_SECRET });
   if (!token) {
@@ -16,7 +15,7 @@ export async function GET(
   }
 
   const currentUserId = token?.sub;
-  const { spaceId } = context.params;
+  const { spaceId } = await context.params;
   console.log(spaceId);
   if (!spaceId) {
     return NextResponse.json(
@@ -40,6 +39,7 @@ export async function GET(
                 username: true,
                 name: true,
                 image: true,
+                isPrivate: true,
               },
             },
           },
@@ -48,11 +48,16 @@ export async function GET(
           orderBy: { createdAt: "asc" }, // Messages in chronological order
           include: {
             sender: {
-              select: {
-                id: true,
-                name: true,
-                username: true,
-                image: true,
+              include: {
+                user: {
+                  select: {
+                    id: true,
+                    username: true,
+                    name: true,
+                    image: true,
+                    isPrivate: true,
+                  },
+                },
               },
             },
           },
@@ -76,12 +81,27 @@ export async function GET(
       );
     }
 
+    const resolveReadByUsers = (message: any, members: any) => {
+      return message.isReadList.map((userId: string) => {
+        const member = members.find((m: any) => m.user.id === userId);
+        return member ? member : null;
+      });
+    };
+
+    // Add resolved "readBy" data to each message
+    const messagesWithReadBy = space.messages.map((message) => ({
+      ...message,
+      readBy: resolveReadByUsers(message, space.members),
+    }));
+
+    const spaceWithReadBy = { ...space, messages: messagesWithReadBy };
+
     return NextResponse.json(
       {
         status: "success",
         message: "Space retrieved successfully",
         data: {
-          space,
+          spaceWithReadBy,
         },
       },
       { status: 200 }

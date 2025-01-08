@@ -22,6 +22,7 @@ export const getBasicDmdata = async () => {
           name: true,
           username: true,
           image: true,
+          isPrivate: true,
         },
       },
       messages: {

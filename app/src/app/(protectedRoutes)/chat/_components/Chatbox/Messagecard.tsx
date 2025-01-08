@@ -1,8 +1,33 @@
 import React from "react";
 import { format, isToday, isYesterday, differenceInDays } from "date-fns";
+import { Message } from "@/app/types/message";
+import Image from "next/image";
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from "@/app/_components/ui/Avatar";
+import { dmMessageType } from "@/app/types/dm";
 
-const MessageBox = ({ msg, currentUserId }: any) => {
-  const isOwnMessage = msg.senderId === currentUserId;
+interface MessageBoxProps {
+  chatType: "dm" | "space";
+  msg: dmMessageType;
+  currentUserId: string;
+  isLast: boolean;
+}
+
+const MessageBox = ({
+  msg,
+  currentUserId,
+  isLast,
+  chatType,
+}: MessageBoxProps) => {
+  const isOwnMessage = msg?.sender?.id === currentUserId;
+
+  // Add a check for msg.sender
+  if (!msg.sender) {
+    return null; // or render a fallback UI
+  }
 
   const formatMessageTime = (messageTime: Date) => {
     const now = new Date();
@@ -17,54 +42,69 @@ const MessageBox = ({ msg, currentUserId }: any) => {
       return format(messageTime, "yyyy-MM-dd HH:mm a");
     }
   };
+
   return (
     <div
-      className={`w-auto max-w-2xl mb-3 ${
-        isOwnMessage ? "ml-auto" : "mr-auto"
+      className={`flex flex-col mb-4 ${
+        isOwnMessage ? "items-end" : "items-start"
       }`}
     >
       <div
-        className={`flex items-start gap-2.5 ${
+        className={`flex items-start gap-3 max-w-2xl ${
           isOwnMessage ? "flex-row-reverse" : "flex-row"
         }`}
       >
         {/* Avatar */}
-        <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-deepPurple text-xs font-medium text-white self-end">
-          {msg.sender.name?.[0]}
-        </div>
-
+        <Avatar className="h-8 w-8">
+          <AvatarFallback>{msg.sender.name?.[0] || "?"}</AvatarFallback>
+        </Avatar>
         {/* Message Content */}
         <div
-          className={`flex flex-col ${
+          className={`flex flex-col gap-1 ${
             isOwnMessage ? "items-end" : "items-start"
           }`}
         >
           {/* Header */}
-          <div
-            className={`flex items-center gap-2 mb-1 ${
-              isOwnMessage ? "flex-row-reverse" : "flex-row"
-            }`}
-          >
-            <span className="text-sm font-medium text-gray-900">
-              {msg.sender.name}
+          <div className="flex items-center gap-2">
+            <span className="text-sm font-semibold text-gray-800">
+              {msg.sender.name || "Unknown"}
             </span>
-            <span className="text-xs text-gray-400">
+            <span className="text-xs text-gray-500">
               {formatMessageTime(msg.createdAt)}
             </span>
           </div>
 
-          {/* Message */}
+          {/* Message Body */}
           <div
-            className={`relative px-3.5 py-2 rounded-2xl ${
+            className={`relative px-4 py-2 rounded-lg ${
               isOwnMessage
                 ? "bg-deepPurple text-white"
                 : "bg-gray-100 text-gray-800"
-            }`}
+            } ${msg.image ? "p-0" : ""}`}
           >
-            <p className="text-sm leading-relaxed max-w-xl break-words">
-              {msg.content}
-            </p>
+            {msg.image ? (
+              <div className="rounded-lg overflow-hidden">
+                <Image
+                  src={msg.image}
+                  alt="message"
+                  height={288}
+                  width={288}
+                  className="object-cover"
+                />
+              </div>
+            ) : (
+              <p className="text-sm leading-relaxed break-words">
+                {msg.content}
+              </p>
+            )}
           </div>
+
+          {/* Seen Indicator */}
+          {isLast && isOwnMessage && chatType === "dm" && (
+            <div className="text-xs text-gray-500">
+              {msg.isReadList && msg.isReadList.length > 1 ? "Seen" : "Sent"}
+            </div>
+          )}
         </div>
       </div>
     </div>

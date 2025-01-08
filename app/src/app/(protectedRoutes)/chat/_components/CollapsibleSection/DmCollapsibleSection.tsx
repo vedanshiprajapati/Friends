@@ -1,11 +1,16 @@
 import { CollapsibleSection } from "@/app/(protectedRoutes)/chat/_components/CollapsibleSection/CollapsibleSection";
 import { getBasicDmdata } from "@/app/_actions/getBasicDmData";
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from "@/app/_components/ui/Avatar";
 import { useQuery } from "@tanstack/react-query";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 
 export const DmCollapsibleSection = () => {
   const route = useRouter();
-
+  const pathname = usePathname();
   const { data, isLoading, isError } = useQuery({
     queryFn: async () => await getBasicDmdata(),
     queryKey: ["BasicDmData"],
@@ -32,12 +37,24 @@ export const DmCollapsibleSection = () => {
           data.map((item) => (
             <div
               key={item.id}
-              className="pl-6 py-2 cursor-pointer text-sm flex items-center text-deepPurple hover:bg-[#e5cef5] rounded-full"
+              className={`pl-6 py-2 cursor-pointer text-sm flex items-center text-deepPurple rounded-full ${
+                pathname.includes(item.id) ? "bg-purple" : "hover:bg-[#e5cef5]"
+              }`}
               onClick={() => handleClick(item.id)}
             >
-              <div className="w-6 h-6 rounded-full bg-deepPurple text-cream mr-2 flex items-center justify-center">
-                {item.user?.name?.[0]?.toUpperCase() || "?"}
-              </div>
+              <Avatar className="w-6 h-6 mr-2">
+                {item.user && item.user.image && (
+                  <AvatarImage
+                    src={item?.user.image}
+                    alt={item.user.name || "avatar"}
+                  />
+                )}
+                <AvatarFallback>
+                  {item.user &&
+                    item.user.name &&
+                    item.user.name[0].toUpperCase()}
+                </AvatarFallback>
+              </Avatar>
               <div className="">{item.user?.name || "Unknown User"}</div>
             </div>
           ))}

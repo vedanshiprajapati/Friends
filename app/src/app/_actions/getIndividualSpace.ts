@@ -2,6 +2,7 @@
 
 import { auth } from "@/auth";
 import { db } from "@/app/lib/db";
+import { SpaceMessage } from "@prisma/client";
 
 export const getIndividualSpace = async (spaceId: string) => {
   const session = await auth();
@@ -25,6 +26,7 @@ export const getIndividualSpace = async (spaceId: string) => {
                 username: true,
                 name: true,
                 image: true,
+                isPrivate: true,
               },
             },
           },
@@ -33,11 +35,16 @@ export const getIndividualSpace = async (spaceId: string) => {
           orderBy: { createdAt: "asc" }, // Messages in chronological order
           include: {
             sender: {
-              select: {
-                id: true,
-                name: true,
-                username: true,
-                image: true,
+              include: {
+                user: {
+                  select: {
+                    id: true,
+                    username: true,
+                    name: true,
+                    image: true,
+                    isPrivate: true,
+                  },
+                },
               },
             },
           },
@@ -46,10 +53,25 @@ export const getIndividualSpace = async (spaceId: string) => {
     });
 
     if (!space) {
-      throw new Error("Group not found.");
+      throw new Error("Space not found.");
     }
 
-    return space;
+    const resolveReadByUsers = (message: SpaceMessage, members: any) => {
+      return message.isReadList.map((userId: string) => {
+        const member = members.find((m: any) => m.user.id === userId);
+        return member ? member : null;
+      });
+    };
+
+    // Add resolved "readBy" data to each message
+    const messagesWithReadBy = space.messages.map((message) => ({
+      ...message,
+      readBy: resolveReadByUsers(message, space.members),
+    }));
+
+    const spaceWithReadBy = { ...space, messages: messagesWithReadBy };
+
+    return spaceWithReadBy;
   } catch (error: any) {
     throw new Error(`Failed to fetch space: ${error.message}`);
   }

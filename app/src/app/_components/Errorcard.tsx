@@ -4,7 +4,6 @@ import React from "react";
 import { Frown, Sofa, RefreshCw } from "lucide-react";
 
 const FriendsErrorPage: React.FC = () => {
-  console.log("erorr card");
   return (
     <div
       className="min-h-screen flex flex-col items-center justify-center p-6"

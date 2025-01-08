@@ -81,9 +81,9 @@ const ChatBox = ({ conversationId }: ChatBoxProps) => {
         </div>
 
         {/* Message Input - Fixed at Bottom */}
-        <div className="border-t border-lavender bg-white">
-          <MessageInput />
-        </div>
+        {/* <div className="border-t border-lavender bg-white">
+          <MessageInput/>
+        </div> */}
       </div>
     </div>
   );

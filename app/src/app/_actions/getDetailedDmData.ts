@@ -3,7 +3,7 @@
 import { auth } from "@/auth";
 import { db } from "@/app/lib/db";
 
-export const getDm = async () => {
+export const getDetailedDmData = async () => {
   const session = await auth();
   const userId = session?.user.id;
 
@@ -20,13 +20,14 @@ export const getDm = async () => {
         select: {
           content: true,
           createdAt: true,
-          isRead: true,
+          isReadList: true,
           sender: {
             select: {
               id: true,
               name: true,
               username: true,
               image: true,
+              isPrivate: true,
             },
           },
         },
@@ -37,6 +38,7 @@ export const getDm = async () => {
           name: true,
           username: true,
           image: true,
+          isPrivate: true,
         },
       },
     },
@@ -49,4 +51,6 @@ export const getDm = async () => {
     ),
     lastMessage: conversation.messages[0] || null,
   }));
+
+  return detailedDMs;
 };

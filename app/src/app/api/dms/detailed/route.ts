@@ -28,7 +28,7 @@ export async function GET(req: Request, res: NextApiResponse) {
           select: {
             content: true,
             createdAt: true,
-            isRead: true,
+            isReadList: true,
             sender: {
               select: {
                 id: true,

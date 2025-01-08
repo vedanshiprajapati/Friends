@@ -43,12 +43,18 @@ export async function GET(req: Request, context: { params: { id: string } }) {
               select: {
                 name: true,
                 username: true,
+                image: true,
+                id: true,
+                isPrivate: true,
               },
             },
             receiver: {
               select: {
                 name: true,
                 username: true,
+                image: true,
+                id: true,
+                isPrivate: true,
               },
             },
           },
