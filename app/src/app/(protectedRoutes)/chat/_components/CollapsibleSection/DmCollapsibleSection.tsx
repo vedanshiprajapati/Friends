@@ -5,6 +5,7 @@ import {
   AvatarFallback,
   AvatarImage,
 } from "@/app/_components/ui/Avatar";
+import { DEFAULT_PROFILE_IMAGE } from "@/app/_data/constants";
 import { useQuery } from "@tanstack/react-query";
 import { usePathname, useRouter } from "next/navigation";
 
@@ -43,17 +44,16 @@ export const DmCollapsibleSection = () => {
               onClick={() => handleClick(item.id)}
             >
               <Avatar className="w-6 h-6 mr-2">
-                {item.user && item.user.image && (
+                {item.user && (
                   <AvatarImage
-                    src={item?.user.image}
+                    src={
+                      item?.user.image
+                        ? item?.user.image
+                        : DEFAULT_PROFILE_IMAGE
+                    }
                     alt={item.user.name || "avatar"}
                   />
                 )}
-                <AvatarFallback>
-                  {item.user &&
-                    item.user.name &&
-                    item.user.name[0].toUpperCase()}
-                </AvatarFallback>
               </Avatar>
               <div className="">{item.user?.name || "Unknown User"}</div>
             </div>

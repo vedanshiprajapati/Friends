@@ -5,6 +5,7 @@ import {
   AvatarFallback,
   AvatarImage,
 } from "@/app/_components/ui/Avatar";
+import { DEFAULT_SPACE_IMAGE } from "@/app/_data/constants";
 import { useQuery } from "@tanstack/react-query";
 import { usePathname, useRouter } from "next/navigation";
 
@@ -42,15 +43,12 @@ export const SpaceCollapsibleSection = () => {
               onClick={() => handleClick(item.id)}
             >
               <Avatar className="w-6 h-6 mr-2">
-                {/* {item.user && item.user.image && (
+                {
                   <AvatarImage
-                    src={item?.user.image}
-                    alt={item.user.name || "avatar"}
+                    src={item.image ? item.image : DEFAULT_SPACE_IMAGE}
+                    alt={"avatar"}
                   />
-                )} */}
-                <AvatarFallback>
-                  {item.name && item.name[0].toUpperCase()}
-                </AvatarFallback>
+                }
               </Avatar>
               <div>{item.name}</div>
             </div>

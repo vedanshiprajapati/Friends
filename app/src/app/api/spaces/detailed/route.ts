@@ -41,17 +41,17 @@ export async function GET(req: Request, res: NextApiResponse) {
       },
     });
 
-    const detailedSpaces = spaces.map((space) => ({
-      id: space.id,
-      name: space.name,
-      lastMessage: space.messages[0] || null,
-    }));
+    // const detailedSpaces = spaces.map((space) => ({
+    //   id: space.id,
+    //   name: space.name,
+    //   lastMessage: space.messages[0] || null,
+    // }));
 
     return NextResponse.json(
       {
         status: "success",
         message: "Data retrieved successfully",
-        data: detailedSpaces,
+        data: spaces,
       },
       { status: 200 }
     );

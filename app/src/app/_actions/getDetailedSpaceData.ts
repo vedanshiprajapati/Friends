@@ -3,7 +3,7 @@
 import { db } from "@/app/lib/db";
 import { auth } from "@/auth";
 
-export const getSpace = async () => {
+export const getDetailedSpaceData = async () => {
   const session = await auth();
   const userId = session?.user.id;
   const spaces = await db.space.findMany({

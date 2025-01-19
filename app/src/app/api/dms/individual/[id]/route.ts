@@ -1,8 +1,10 @@
 import { db } from "@/app/lib/db";
 import { getToken } from "next-auth/jwt";
 import { NextResponse } from "next/server";
-
-export async function GET(req: Request, context: { params: { id: string } }) {
+interface Iparams {
+  id: string;
+}
+export async function GET(req: Request, context: { params: Promise<Iparams> }) {
   const token = await getToken({ req: req, secret: process.env.AUTH_SECRET });
   if (!token) {
     return NextResponse.json(
@@ -12,8 +14,8 @@ export async function GET(req: Request, context: { params: { id: string } }) {
   }
 
   const currentUserId = token?.sub;
-  const { id } = context.params;
-  const conversationId = id; // Extract "id" (conversation ID) from query params
+  const { id } = await context.params;
+  const conversationId = id;
 
   if (!conversationId) {
     return NextResponse.json(
@@ -22,8 +24,11 @@ export async function GET(req: Request, context: { params: { id: string } }) {
     );
   }
 
+  const cursor = new URL(req.url).searchParams.get("cursor");
+  console.log(req.url, "REQ URL     CURSOR", cursor);
+  const limit = 20; // Number of messages to fetch per request
+
   try {
-    // Fetch the conversation by ID
     const conversation = await db.conversation.findUnique({
       where: { id: conversationId },
       include: {
@@ -37,7 +42,10 @@ export async function GET(req: Request, context: { params: { id: string } }) {
           },
         },
         messages: {
-          orderBy: { createdAt: "asc" },
+          take: limit,
+          skip: cursor ? 1 : 0,
+          cursor: cursor ? { id: cursor } : undefined,
+          orderBy: { createdAt: "desc" },
           include: {
             sender: {
               select: {
@@ -69,7 +77,6 @@ export async function GET(req: Request, context: { params: { id: string } }) {
       );
     }
 
-    // Ensure the current user is a participant in the conversation
     const isParticipant = conversation.participants.some(
       (participant) => participant.id === currentUserId
     );
@@ -80,18 +87,22 @@ export async function GET(req: Request, context: { params: { id: string } }) {
       );
     }
 
-    // Identify the other user in the conversation
     const otherUser = conversation.participants.find(
       (participant) => participant.id !== currentUserId
     );
+
+    const nextCursor =
+      conversation.messages.length === limit
+        ? conversation.messages[limit - 1].id
+        : null;
 
     return NextResponse.json(
       {
         status: "success",
         message: "DM conversation retrieved successfully",
         data: {
-          otherUser,
           messages: conversation.messages,
+          nextCursor,
         },
       },
       { status: 200 }

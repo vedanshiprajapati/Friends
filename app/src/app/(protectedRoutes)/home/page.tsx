@@ -24,20 +24,9 @@
 // }
 
 import React from "react";
-import ChatHeader from "./_components/ChatHeader";
-import ChatSidebar from "./_components/ChatSidebar";
-import ChatMain from "./_components/ChatMain";
 
 const ChatHomePage = () => {
-  return (
-    <div className="flex flex-col h-screen">
-      <ChatHeader />
-      <div className="flex flex-1">
-        <ChatSidebar />
-        <ChatMain />
-      </div>
-    </div>
-  );
+  return <div className="flex flex-col h-screen"></div>;
 };
 
 export default ChatHomePage;

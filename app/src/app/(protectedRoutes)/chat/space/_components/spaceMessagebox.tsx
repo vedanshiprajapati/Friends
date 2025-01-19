@@ -1,50 +1,12 @@
 import React from "react";
 import { format, isToday, isYesterday, differenceInDays } from "date-fns";
 import Image from "next/image";
-import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-} from "@/app/_components/ui/Avatar";
+import { Avatar, AvatarImage } from "@/app/_components/ui/Avatar";
+import { SPACE_CHARACTER_IMAGE } from "@/app/_data/constants";
+import { SpaceMessage } from "@/app/types/space";
 
 interface SpaceMessageBoxProps {
-  msg: {
-    id: string;
-    content: string;
-    createdAt: string; // Assuming createdAt is a string from the API
-    updatedAt: string; // Assuming updatedAt is a string from the API
-    isEdited: boolean;
-    isReadList: string[];
-    image?: string;
-    spaceId: string;
-    spaceMemberId: string;
-    taggedRole?: string;
-    sender: {
-      id: string;
-      role: string;
-      isAdmin: boolean;
-      joinedAt: Date;
-      userId: string;
-      spaceId: string;
-      user: {
-        id: string;
-        image: string;
-        username: string;
-        name: string;
-        isPrivate: boolean;
-      }; // Assuming joinedAt is a string from the API
-    };
-    readBy: Array<{
-      id: string;
-      role: string;
-      user: {
-        id: string;
-        username: string;
-        name: string;
-        image?: string;
-      };
-    }>;
-  };
+  msg: SpaceMessage;
   currentUserId: string;
   isLast: boolean;
 }
@@ -54,7 +16,7 @@ const SpaceMessageBox = ({
   currentUserId,
   isLast,
 }: SpaceMessageBoxProps) => {
-  const isOwnMessage = msg.sender.userId === currentUserId;
+  const isOwnMessage = msg.sender.id === currentUserId;
 
   const formatMessageTime = (messageTime: string) => {
     const date = new Date(messageTime);
@@ -83,8 +45,14 @@ const SpaceMessageBox = ({
         }`}
       >
         {/* Avatar */}
-        <Avatar className="h-8 w-8">
-          <AvatarFallback>{msg.sender.role?.[0] || "?"}</AvatarFallback>
+        <Avatar className="h-9 w-9">
+          <AvatarImage
+            src={
+              SPACE_CHARACTER_IMAGE.filter(
+                (item) => item.name === msg.sender.role
+              )[0].avatar
+            }
+          />
         </Avatar>
 
         {/* Message Content */}
@@ -99,7 +67,7 @@ const SpaceMessageBox = ({
               {msg.sender.role} {/* Display the sender's role */}
             </span>
             <span className="text-xs text-gray-500">
-              {formatMessageTime(msg.createdAt)}
+              {formatMessageTime(msg.createdAt.toString())}
             </span>
           </div>
 

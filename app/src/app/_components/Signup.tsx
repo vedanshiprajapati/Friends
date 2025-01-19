@@ -25,14 +25,7 @@ const SignupPage: React.FC = () => {
   const signupMutation = useMutation({
     mutationFn: (data: SignupFormInputs) => signup(data),
     onSuccess: (data) => {
-      if (data.error) {
-        console.error("Error while signing up:", data.error);
-      } else {
-        console.log("Signup successful!");
-      }
-    },
-    onError: (error) => {
-      console.error("Error while signing up:", error);
+      console.log("Signup successful!");
     },
   });
 
@@ -91,7 +84,7 @@ const SignupPage: React.FC = () => {
                 type="email"
                 placeholder="Email(Required)"
                 {...register("email", { required: "Email is required" })}
-                disabled={isSubmitting}
+                disabled={isSubmitting || signupMutation.isPending}
                 className="w-full pl-10 pr-4 py-3 rounded-lg"
                 style={{
                   backgroundColor: "#F7EFE5",
@@ -115,7 +108,7 @@ const SignupPage: React.FC = () => {
                 type="text"
                 placeholder="Name(Required)"
                 {...register("name", { required: "Name is required" })}
-                disabled={isSubmitting}
+                disabled={isSubmitting || signupMutation.isPending}
                 className="w-full pl-10 pr-4 py-3 rounded-lg"
                 style={{
                   backgroundColor: "#F7EFE5",
@@ -139,7 +132,7 @@ const SignupPage: React.FC = () => {
                 type="password"
                 placeholder="Password(Required)"
                 {...register("password", { required: "Password is required" })}
-                disabled={isSubmitting}
+                disabled={isSubmitting || signupMutation.isPending}
                 className="w-full pl-10 pr-4 py-3 rounded-lg"
                 style={{
                   backgroundColor: "#F7EFE5",
@@ -156,16 +149,14 @@ const SignupPage: React.FC = () => {
 
             <button
               type="submit"
-              disabled={isSubmitting}
-              className="w-full py-3 rounded-lg font-bold transition-all duration-300 hover:scale-105"
-              style={{
-                backgroundColor: "#674188",
-                color: "#F7EFE5",
-              }}
+              disabled={isSubmitting || signupMutation.isPending}
+              className="w-full py-3 font-bold bg-deepPurple text-cream"
             >
               {isSubmitting ? "Loading..." : "Sign up"}
             </button>
           </form>
+
+          <p className="text-red-500">{signupMutation.error?.message}</p>
           <div className="flex items-center my-6">
             <div className="w-auto h-1 bg-[#674188] flex-grow rounded-full"></div>
             <div className="mx-4 text-[#674188]">OR</div>
@@ -193,7 +184,7 @@ const SignupPage: React.FC = () => {
           <div className="text-center mt-4">
             <Link
               href={"/auth/signin"}
-              className="text-sm flex items-center justify-center"
+              className="text-sm flex items-center justify-center hover:underline"
               style={{ color: "#674188" }}
             >
               Already part of the gang? Pivot to Sign In!

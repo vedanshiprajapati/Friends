@@ -9,18 +9,19 @@ import {
   HelpCircle,
   ChevronDown,
 } from "lucide-react";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 
 interface DropdownItem {
   icon?: React.ReactNode;
   label: string;
-  onClick?: () => void;
+  onClick?: (para?: any) => void;
   path?: string;
   divider?: boolean;
 }
 
 interface AvatarDropdownProps {
-  src?: string;
-  fallback: string;
   items?: DropdownItem[];
   className?: string;
   size?: "sm" | "md" | "lg";
@@ -29,10 +30,15 @@ interface AvatarDropdownProps {
 }
 
 const defaultItems: DropdownItem[] = [
-  { icon: <User size={16} />, label: "Profile", path: "/profile" },
+  {
+    icon: <User size={16} />,
+    label: "Profile",
+    path: "/profile",
+    onClick: (route: AppRouterInstance) => {
+      route.push("/profile");
+    },
+  },
   { icon: <Settings size={16} />, label: "Settings", path: "/settings" },
-  { icon: <Bell size={16} />, label: "Notifications", path: "/notifications" },
-  { icon: <HelpCircle size={16} />, label: "Help & Feedback", path: "/help" },
   { divider: true, label: "divider" },
   {
     icon: <LogOut size={16} />,
@@ -42,8 +48,6 @@ const defaultItems: DropdownItem[] = [
 ];
 
 const AvatarDropdown: React.FC<AvatarDropdownProps> = ({
-  src,
-  fallback,
   items = defaultItems,
   className = "",
   size = "md",
@@ -51,6 +55,9 @@ const AvatarDropdown: React.FC<AvatarDropdownProps> = ({
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const session = useSession();
+  const src = session.data?.user.image;
+  const route = useRouter();
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -74,27 +81,35 @@ const AvatarDropdown: React.FC<AvatarDropdownProps> = ({
 
   return (
     <div className="relative inline-block" ref={dropdownRef}>
-      <button
+      <div
         onClick={() => setIsOpen(!isOpen)}
         className={`flex items-center space-x-2 focus:outline-none ${className}`}
       >
         <div
-          className={`relative ${sizeClasses[size]} rounded-full bg-deepPurple text-white flex items-center justify-center overflow-hidden hover:bg-purple transition-colors duration-200`}
+          className={`relative ${sizeClasses[size]} rounded-full text-deepPurple flex items-center justify-center overflow-hidden shadow-xl`}
         >
           {src ? (
-            <img src={src} className="w-full h-full object-cover" />
+            <img
+              src={src}
+              className="w-full h-full object-cover rounded-full border-0 shadow-md"
+            />
           ) : (
-            <span className="font-medium">{fallback[0].toUpperCase()}</span>
+            <span className="font-medium">
+              {session.data?.user.name &&
+                session.data?.user.name[0].toUpperCase()}
+            </span>
           )}
         </div>
-      </button>
+      </div>
 
       {isOpen && (
         <div
           className={`absolute mt-2 px-2 right-0 w-60 rounded-lg shadow-lg bg-white border border-lavender py-1 z-50`}
         >
           <div className="px-4 py-3 border-b border-lavender">
-            <p className="text-sm font-medium text-gray-900">{fallback}</p>
+            <p className="text-sm font-medium text-gray-900">
+              {session.data?.user.name}
+            </p>
           </div>
 
           {items.map((item, index) =>
@@ -105,7 +120,7 @@ const AvatarDropdown: React.FC<AvatarDropdownProps> = ({
                 key={index}
                 onClick={() => {
                   setIsOpen(false);
-                  item.onClick?.();
+                  item.onClick?.(route);
                 }}
                 className="w-full px-4 py-2 text-sm text-left hover:bg-lightPurple2 flex items-center transition-colors duration-150 "
               >

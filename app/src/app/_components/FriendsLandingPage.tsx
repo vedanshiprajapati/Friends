@@ -80,7 +80,7 @@ const FriendsLandingPage: React.FC = () => {
         <div className="block mr-6">
           <div className="w-full max-w-md h-96 rounded-xl flex items-center justify-center bg-purple border-4 border-deepPurple px-8">
             <Image
-              src={"/landingPage.png"}
+              src={"/group-image.png"}
               alt="ross"
               className="rounded-xl border w-auto"
               width={400}

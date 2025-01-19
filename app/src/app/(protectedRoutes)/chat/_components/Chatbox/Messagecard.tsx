@@ -2,12 +2,9 @@ import React from "react";
 import { format, isToday, isYesterday, differenceInDays } from "date-fns";
 import { Message } from "@/app/types/message";
 import Image from "next/image";
-import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-} from "@/app/_components/ui/Avatar";
+import { Avatar, AvatarImage } from "@/app/_components/ui/Avatar";
 import { dmMessageType } from "@/app/types/dm";
+import { DEFAULT_PROFILE_IMAGE } from "@/app/_data/constants";
 
 interface MessageBoxProps {
   chatType: "dm" | "space";
@@ -56,7 +53,9 @@ const MessageBox = ({
       >
         {/* Avatar */}
         <Avatar className="h-8 w-8">
-          <AvatarFallback>{msg.sender.name?.[0] || "?"}</AvatarFallback>
+          <AvatarImage
+            src={msg.sender.image ? msg.sender.image : DEFAULT_PROFILE_IMAGE}
+          />
         </Avatar>
         {/* Message Content */}
         <div

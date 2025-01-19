@@ -1,103 +1,121 @@
 "use client";
-import React, { useEffect, useRef, useState } from "react";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import React, { useMemo, useEffect, useCallback } from "react";
+import {
+  useInfiniteQuery,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
 import { useSession } from "next-auth/react";
 import Loader from "@/app/_components/Loader";
-import { otherUser } from "@/app/types/user";
-import { postDmMessage } from "@/app/_data/util";
-import { DmMessage } from "@/app/types/message";
-import { getIndividualDm } from "@/app/_actions/getIndividualDm";
 import { Header } from "@/app/(protectedRoutes)/chat/_components/Chatbox/Header";
-import MessageBox from "@/app/(protectedRoutes)/chat/_components/Chatbox/Messagecard";
 import { MessageInput } from "@/app/(protectedRoutes)/chat/_components/Chatbox/Messageinput";
-import { pusherClient } from "@/app/lib/pusher";
-import { dmMessageType } from "@/app/types/dm";
+import { useRouter, useSearchParams } from "next/navigation";
+import DmInfo from "./DmInfo";
+import DmMessageList from "./DmMessageList";
+import { getDetailedDmData } from "@/app/_actions/getDetailedDmData";
 import DynamicErrorCard from "@/app/_components/DynamicErrorcard";
+import { postDmMessage } from "@/app/_data/util";
+import { pusherClient } from "@/app/lib/pusher"; // Make sure to import your Pusher client
 
-interface DmResponse {
-  otherUser: otherUser;
-  messages: DmMessage[];
-}
+// Fetch messages function
+const fetchMessages = async ({
+  pageParam = null,
+  id,
+}: {
+  pageParam?: string | null;
+  id: string;
+}) => {
+  const response = await fetch(
+    `/api/dms/individual/${id}${pageParam ? `?cursor=${pageParam}` : ""}`
+  );
+  if (!response.ok) {
+    throw new Error("Failed to fetch messages");
+  }
+  const result = await response.json();
+  return result.data;
+};
 
 const DmChatBox = ({ id }: { id: string }) => {
   const session = useSession();
-  const currentUserId = session.data?.user.id;
-  const bottomRef = useRef<HTMLDivElement>(null);
-  const [latestMessages, setLatestMessages] = useState<dmMessageType[]>([]);
+  const currentUserId = session.data?.user.id!;
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const queryClient = useQueryClient();
 
-  // Fetch DM data using React Query
-  const { data, isLoading, isError, error } = useQuery({
-    queryKey: ["IndividualDmData", id],
-    queryFn: () => getIndividualDm(id),
+  const showInfo = useMemo(
+    () => searchParams.get("info") === "true",
+    [searchParams]
+  );
+
+  // Main conversation data query
+  const { data: conversationData, isLoading: isLoadingConversation } = useQuery(
+    {
+      queryKey: ["DetailedDmData", id],
+      queryFn: () => getDetailedDmData(),
+    }
+  );
+
+  // Messages infinite query
+  const {
+    data: messagesData,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+    isLoading: isLoadingMessages,
+  } = useInfiniteQuery({
+    queryKey: ["messages", id],
+    queryFn: ({ pageParam }) => fetchMessages({ pageParam, id }),
+    getNextPageParam: (lastPage) => lastPage.nextCursor ?? undefined,
+    initialPageParam: null,
   });
 
-  // Initialize `latestMessages` with data from React Query
-  useEffect(() => {
-    if (data) {
-      setLatestMessages(data.messages);
-    }
-  }, [data]);
+  // Handle new message from Pusher
+  const handleNewMessage = useCallback(
+    (newMessage: any) => {
+      queryClient.setQueryData(["messages", id], (oldData: any) => {
+        if (!oldData?.pages?.length) return oldData;
 
-  // Mark messages as read
-  const markAsReadMutation = useMutation({
-    mutationFn: async () => {
-      const response = await fetch(`/api/dms/individual/${id}/isRead`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ userId: currentUserId }),
+        // Create a new pages array with the new message added to the first page
+        const newPages = [...oldData.pages];
+        const firstPage = { ...newPages[0] };
+
+        // Add the new message to the beginning of the first page's messages
+        firstPage.messages = [newMessage.newMessage, ...firstPage.messages];
+        newPages[0] = firstPage;
+
+        return {
+          ...oldData,
+          pages: newPages,
+        };
       });
-      if (!response.ok) {
-        throw new Error("Failed to mark messages as read");
-      }
-      return response.json();
     },
-  });
+    [queryClient, id]
+  );
 
-  // Trigger the mutation when the component mounts or when the id/currentUserId changes
-  useEffect(() => {
-    if (currentUserId && id) {
-      markAsReadMutation.mutate();
-    }
-  }, [id, currentUserId]);
-
-  // Subscribe to Pusher for real-time updates
+  // Subscribe to Pusher channel
   useEffect(() => {
     if (!id) return;
 
-    // Subscribe to the channel
-    pusherClient.subscribe(id);
+    // Subscribe to the conversation channel
+    const channel = pusherClient.subscribe(id);
+    channel.bind("messages:new", handleNewMessage);
 
-    // Bind to the "messages:new" event
-    const handleNewMessage = (newMessage: dmMessageType) => {
-      setLatestMessages((prevMessages) => {
-        const isDuplicate = prevMessages.some(
-          (msg) => msg.id === newMessage.id
-        );
-        if (isDuplicate) {
-          return prevMessages;
-        }
-        return [...prevMessages, newMessage];
-      });
-      bottomRef.current?.scrollIntoView({ behavior: "smooth" });
-    };
-
-    pusherClient.bind("messages:new", handleNewMessage);
-
-    // Cleanup
     return () => {
-      console.log("Cleaning up Pusher subscription for channel:", id); // Debugging
+      channel.unbind("messages:new", handleNewMessage);
       pusherClient.unsubscribe(id);
-      pusherClient.unbind("messages:new", handleNewMessage);
     };
-  }, [id]);
+  }, [id, handleNewMessage]);
+
+  // Combine all messages for DmInfo
+  const allMessages = useMemo(() => {
+    return messagesData?.pages.flatMap((page) => page.messages) ?? [];
+  }, [messagesData]);
 
   if (!id) {
     return <p>Id is not given id: {id}</p>;
   }
 
-  if (isLoading) {
+  if (isLoadingConversation || isLoadingMessages) {
     return (
       <div className="w-full h-full flex justify-center items-center">
         <Loader />
@@ -105,55 +123,34 @@ const DmChatBox = ({ id }: { id: string }) => {
     );
   }
 
-  if (isError || !data) {
+  if (!conversationData) {
     return (
       <div className="w-full h-full flex justify-center items-center">
-        <DynamicErrorCard message={error?.message} />
+        <DynamicErrorCard message="Failed to load conversation" />
       </div>
     );
   }
 
-  const { otherUser } = data as DmResponse;
+  const conversation = conversationData.find((dm) => dm.id === id);
+  if (!conversation) {
+    return <p>Conversation not found.</p>;
+  }
+
+  const otherUser = conversation.participants[0];
 
   return (
-    <div className="flex flex-col h-[calc(100vh-4rem)] min-w-fit flex-grow central-perk-bg text-black border-b border-t border-x border-lavender ">
-      {/* Header */}
-      <Header user={otherUser} />
-
-      {/* Main Content Container */}
-      <div className="flex-1 flex flex-col overflow-y-auto">
-        {/* Chat Info Section - Fixed at Top */}
-        <div className="overflow-y-scroll flex-1 ">
-          <div className="text-center py-8">
-            <div className="w-16 h-16 bg-deepPurple rounded-full flex items-center justify-center text-white text-2xl mx-auto mb-4">
-              {otherUser.name?.[0]}
-            </div>
-            <h2 className="text-xl font-medium mb-1">{otherUser.name}</h2>
-            <p className="text-gray-500 text-sm mb-1">@{otherUser.username}</p>
-          </div>
-
-          {/* Messages Container - Scrollable */}
-          <div className="flex-1 overflow-auto px-4 min-h-0">
-            <div className="flex flex-col justify-end min-h-full ">
-              {currentUserId &&
-                latestMessages.map((msg, i) => {
-                  // Debugging
-                  return (
-                    <MessageBox
-                      key={msg.id}
-                      chatType="dm"
-                      isLast={i === latestMessages.length - 1}
-                      msg={msg}
-                      currentUserId={currentUserId}
-                    />
-                  );
-                })}
-            </div>
-            <div ref={bottomRef} />
-          </div>
-        </div>
-
-        {/* Message Input - Fixed at Bottom */}
+    <div className="flex flex-row h-[calc(100vh-4rem)]">
+      <div className="flex flex-col h-[calc(100vh-4rem)] min-w-fit flex-grow central-perk-bg text-black border-b border-t border-x border-lavender rounded-t-2xl mr-1">
+        <Header user={otherUser} />
+        <div className="mt-4"></div>
+        <DmMessageList
+          id={id}
+          currentUserId={currentUserId}
+          messages={allMessages}
+          fetchNextPage={fetchNextPage}
+          hasNextPage={hasNextPage}
+          isFetchingNextPage={isFetchingNextPage}
+        />
         <div className="border-t border-lavender bg-white flex-shrink-0">
           <MessageInput
             chatId={id}
@@ -162,6 +159,21 @@ const DmChatBox = ({ id }: { id: string }) => {
           />
         </div>
       </div>
+      {showInfo && (
+        <div className="w-80 h-[calc(100vh-4rem)] border-l border-lavender overflow-y-auto">
+          <DmInfo
+            data={{
+              otherUser,
+              messages: allMessages,
+            }}
+            onClose={() => {
+              const params = new URLSearchParams(searchParams);
+              params.delete("info");
+              router.replace(`?${params.toString()}`);
+            }}
+          />
+        </div>
+      )}
     </div>
   );
 };

@@ -1,12 +1,14 @@
 import { db } from "@/app/lib/db";
 import { getToken } from "next-auth/jwt";
 import { NextResponse } from "next/server";
-interface Iparams {
-  spaceId: string;
-}
-export async function GET(req: Request, context: { params: Promise<Iparams> }) {
-  console.log("in get function");
-  const token = await getToken({ req: req, secret: process.env.AUTH_SECRET });
+
+const MESSAGES_PER_PAGE = 20;
+
+export async function GET(
+  req: Request,
+  { params }: { params: { spaceId: string } }
+) {
+  const token = await getToken({ req, secret: process.env.AUTH_SECRET });
   if (!token) {
     return NextResponse.json(
       { message: "Unauthorized!", status: "error" },
@@ -15,17 +17,35 @@ export async function GET(req: Request, context: { params: Promise<Iparams> }) {
   }
 
   const currentUserId = token?.sub;
-  const { spaceId } = await context.params;
-  console.log(spaceId);
-  if (!spaceId) {
-    return NextResponse.json(
-      { message: "Missing 'id' parameter", status: "error" },
-      { status: 400 }
-    );
-  }
+  const { spaceId } = params;
+  const cursor = new URL(req.url).searchParams.get("cursor");
 
   try {
-    // Fetch the space by ID
+    // Fetch messages with pagination
+    const messages = await db.spaceMessage.findMany({
+      where: { spaceId },
+      take: MESSAGES_PER_PAGE,
+      skip: cursor ? 1 : 0,
+      cursor: cursor ? { id: cursor } : undefined,
+      orderBy: { createdAt: "desc" },
+      include: {
+        sender: {
+          include: {
+            user: {
+              select: {
+                id: true,
+                username: true,
+                name: true,
+                image: true,
+                isPrivate: true,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    // Get space members for resolving readBy
     const space = await db.space.findUnique({
       where: { id: spaceId },
       include: {
@@ -44,24 +64,6 @@ export async function GET(req: Request, context: { params: Promise<Iparams> }) {
             },
           },
         },
-        messages: {
-          orderBy: { createdAt: "asc" }, // Messages in chronological order
-          include: {
-            sender: {
-              include: {
-                user: {
-                  select: {
-                    id: true,
-                    username: true,
-                    name: true,
-                    image: true,
-                    isPrivate: true,
-                  },
-                },
-              },
-            },
-          },
-        },
       },
     });
 
@@ -71,46 +73,35 @@ export async function GET(req: Request, context: { params: Promise<Iparams> }) {
         { status: 404 }
       );
     }
-    const isParticipant = space.members.some(
-      (participant) => participant.user.id === currentUserId
-    );
-    if (!isParticipant) {
-      return NextResponse.json(
-        { message: "Access denied", status: "error" },
-        { status: 403 }
-      );
-    }
 
-    const resolveReadByUsers = (message: any, members: any) => {
-      return message.isReadList.map((userId: string) => {
-        const member = members.find((m: any) => m.user.id === userId);
-        return member ? member : null;
-      });
-    };
-
-    // Add resolved "readBy" data to each message
-    const messagesWithReadBy = space.messages.map((message) => ({
+    // Resolve readBy users for each message
+    const messagesWithReadBy = messages.map((message) => ({
       ...message,
-      readBy: resolveReadByUsers(message, space.members),
+      readBy: message.isReadList
+        .map((userId) =>
+          space.members.find((member) => member.user.id === userId)
+        )
+        .filter(Boolean),
     }));
 
-    const spaceWithReadBy = { ...space, messages: messagesWithReadBy };
+    const nextCursor =
+      messages.length === MESSAGES_PER_PAGE
+        ? messages[messages.length - 1].id
+        : null;
 
-    return NextResponse.json(
-      {
-        status: "success",
-        message: "Space retrieved successfully",
-        data: {
-          spaceWithReadBy,
-        },
+    return NextResponse.json({
+      status: "success",
+      message: "Messages retrieved successfully",
+      data: {
+        messages: messagesWithReadBy,
+        nextCursor,
       },
-      { status: 200 }
-    );
+    });
   } catch (error: any) {
     return NextResponse.json(
       {
         status: "error",
-        message: "Failed to fetch Space",
+        message: "Failed to fetch messages",
         error: error.message,
       },
       { status: 500 }

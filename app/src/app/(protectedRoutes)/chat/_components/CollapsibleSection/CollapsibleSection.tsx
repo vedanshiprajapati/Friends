@@ -6,7 +6,7 @@ import { useState } from "react";
 export const CollapsibleSection = ({ title, children }: any) => {
   const [isOpen, setIsOpen] = useState(true);
   return (
-    <div className="mb-2 hover:bg-lightPurple2">
+    <div className="mb-2 hover:bg-lightPurple2 rounded-xl mr-2">
       <div
         className="flex items-center p-2 cursor-pointer text-deepPurple"
         onClick={() => setIsOpen(!isOpen)}

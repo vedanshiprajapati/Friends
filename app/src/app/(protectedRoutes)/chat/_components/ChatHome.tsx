@@ -1,5 +1,5 @@
 "use client";
-import React, { ReactNode } from "react";
+import React, { ReactNode, useState } from "react";
 import {
   Menu,
   Search,
@@ -9,19 +9,22 @@ import {
   User,
   LogOut,
 } from "lucide-react";
-import { NewChatDropdown } from "@/app/(protectedRoutes)/chat/_components/NewChatDropDown";
+import { NewSpaceDropdown } from "@/app/(protectedRoutes)/chat/_components/NewSpace/DropDown";
 import { SpaceCollapsibleSection } from "@/app/(protectedRoutes)/chat/_components/CollapsibleSection/SpaceCollapsibleSection";
 import { DmCollapsibleSection } from "@/app/(protectedRoutes)/chat/_components/CollapsibleSection/DmCollapsibleSection";
 import { ShortCutCollapsibleSection } from "@/app/(protectedRoutes)/chat/_components/CollapsibleSection/ShortCutCollapsibleSection";
 import { CurrentUserAvatar } from "@/app/_components/CurrentUserAvatar";
-import { Avatar, AvatarImage } from "@/app/_components/ui/Avatar";
+import PopUp from "./NewSpace/Popup";
+import AvatarDropdown from "./AvatarDropdown";
 
 // Main Component
 const ChatHome = ({ children }: { children: ReactNode }) => {
+  const [isOpen, setIsOpen] = useState(false);
+
   return (
-    <div className="flex h-screen">
+    <div className="flex h-screen bg-lightCream">
       {/* Sidebar */}
-      <div className="w-1/5 border-r border-lavender flex flex-col bg-lightCream">
+      <div className="w-1/5 flex flex-col ">
         {/* New Chat Button */}
         <div className="flex mt-4">
           <Menu
@@ -36,7 +39,7 @@ const ChatHome = ({ children }: { children: ReactNode }) => {
           </div>
         </div>
         <div className="p-4">
-          <NewChatDropdown />
+          <NewSpaceDropdown isPopup={isOpen} setIsPopup={setIsOpen} />
         </div>
 
         {/* Sidebar Navigation */}
@@ -50,7 +53,7 @@ const ChatHome = ({ children }: { children: ReactNode }) => {
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col">
         {/* Header */}
-        <div className="h-14 border-b border-lavender flex items-center px-4 bg-lightCream">
+        <div className="h-16 flex items-center px-4 bg-lightCream">
           <div className="flex-1">
             <div className="max-w-xl">
               <div className="relative">
@@ -80,12 +83,13 @@ const ChatHome = ({ children }: { children: ReactNode }) => {
           <div className="flex items-center space-x-4">
             <Settings size={20} className="text-deepPurple cursor-pointer" />
             <HelpCircle size={20} className="text-deepPurple cursor-pointer" />
-            <CurrentUserAvatar />
+            <AvatarDropdown />
           </div>
         </div>
 
         {/* Content */}
-        <div className="flex-1 justify-center items-center">
+        <div className="flex-1 justify-center items-center bg-white rounded-t-2xl">
+          {isOpen && <PopUp isOpen onClose={() => setIsOpen(false)} />}
           {/* {selectedChat ? (
             <ChatBox
               chatName={selectedChat.name}

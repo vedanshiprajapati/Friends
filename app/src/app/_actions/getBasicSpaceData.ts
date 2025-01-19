@@ -16,6 +16,7 @@ export const getBasicSpaceData = async () => {
       id: true,
       name: true,
       isPrivate: true,
+      image: true,
     },
   });
   return spaces;

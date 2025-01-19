@@ -1708,29 +1708,6 @@ button[disabled],
   opacity: 0.5;
 }
 
-a {
-  color: #41403e;
-  color: var(--secondary);
-  background-image: linear-gradient(
-      5deg,
-      transparent 65%,
-      #0b74d5 80%,
-      transparent 90%
-    ),
-    linear-gradient(165deg, transparent 5%, #0b74d5 15%, transparent 25%),
-    linear-gradient(165deg, transparent 45%, #0b74d5 55%, transparent 65%),
-    linear-gradient(15deg, transparent 25%, #0b74d5 35%, transparent 50%);
-  background-position: 0 90%;
-  background-repeat: repeat-x;
-  background-size: 4px 3px;
-  text-decoration: none;
-}
-a:visited {
-  color: #41403e;
-  color: var(--primary);
-  text-decoration: none;
-}
-
 button.btn-primary,
 .paper-btn.btn-primary,
 [type="button"].btn-primary {

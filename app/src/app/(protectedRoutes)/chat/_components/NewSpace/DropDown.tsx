@@ -8,7 +8,13 @@ import {
   Users,
 } from "lucide-react";
 
-export const NewChatDropdown = () => {
+export const NewSpaceDropdown = ({
+  isPopup,
+  setIsPopup,
+}: {
+  isPopup: boolean;
+  setIsPopup: React.Dispatch<React.SetStateAction<boolean>>;
+}) => {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement | null>(null);
 
@@ -36,7 +42,7 @@ export const NewChatDropdown = () => {
         className="flex items-center space-x-2 px-4 py-2 rounded-full border border-lavender hover:bg-lightPurple2 w-full text-deepPurple"
       >
         <Plus size={20} />
-        <span>New chat</span>
+        <span>New Space</span>
       </button>
 
       {/* Dropdown Menu */}
@@ -64,7 +70,7 @@ export const NewChatDropdown = () => {
       {isOpen && (
         <div
           ref={dropdownRef}
-          className="absolute top-0 w-64 h-64 left-full ml-2 bg-white border border-lavender z-1 text-deepPurple"
+          className="absolute top-0 w-64 left-full ml-2 bg-white border border-lavender z-1 text-deepPurple"
         >
           <div className="p-2">
             {DropdownOptions.map((item) => {
@@ -73,6 +79,10 @@ export const NewChatDropdown = () => {
                   title={item.title}
                   icon={item.icon}
                   key={item.title}
+                  onClick={() => {
+                    item.onClick(setIsPopup);
+                    setIsOpen(false);
+                  }}
                 />
               );
             })}
@@ -85,22 +95,23 @@ export const NewChatDropdown = () => {
 
 const DropdownOptions = [
   {
-    icon: MessageSquare,
-    title: "Add one or more people",
-    onClick: () => {
-      console.log("Add one or more people");
-    },
-  },
-  {
     icon: Users,
     title: "Create a space",
+    onClick: (setIsPopup: React.Dispatch<React.SetStateAction<boolean>>) => {
+      setIsPopup(true);
+    },
+  },
+  {
+    icon: MessageSquare,
+    title: "Join random space",
     onClick: () => {
       console.log("Add one or more people");
     },
   },
+
   {
     icon: MessageCirclePlus,
-    title: "New message Requests",
+    title: "use Invite Code",
     onClick: () => {
       console.log("Add one or more people");
     },
@@ -114,10 +125,13 @@ const DropdownItem = ({
 }: {
   icon: LucideIcon;
   title: string;
-  onClick?: () => {};
+  onClick?: () => void;
 }) => {
   return (
-    <div className="p-2 hover:bg-lightPurple2 rounded cursor-pointer flex items-center">
+    <div
+      className="p-2 hover:bg-lightPurple2 rounded cursor-pointer flex items-center"
+      onClick={onClick}
+    >
       <Icon size={18} className="text-deepPurple" />
       <span className="ml-2 text-sm">{title}</span>
     </div>

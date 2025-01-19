@@ -69,7 +69,7 @@ const DynamicChatBox = ({ id, chatType, fetchFn }: ChatBoxProps) => {
         };
 
   return (
-    <div className="flex flex-col h-[calc(100vh-4rem)] min-w-fit flex-grow central-perk-bg text-black border-b border-t border-x border-lavender ">
+    <div className="flex flex-col h-[calc(100vh-4rem)] min-w-fit flex-grow central-perk-bg text-black border-b border-t border-x border-lavender rounded-xl">
       {/* Header */}
       {chatType === "dm" ? (
         <Header user={chatData.headerUser} />

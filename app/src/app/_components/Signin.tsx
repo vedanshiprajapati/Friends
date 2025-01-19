@@ -173,7 +173,7 @@ const LoginPage: React.FC = () => {
               Don't have an account?
               <Link
                 href="/auth/signup"
-                className="font-bold ml-2"
+                className="font-bold ml-2 hover:underline"
                 style={{ color: "#674188" }}
               >
                 Sign Up

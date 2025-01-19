@@ -38,7 +38,11 @@ export async function POST(
     // Validate the role is a valid FriendsRole
     if (!Object.values(FriendsRole).includes(role)) {
       return NextResponse.json(
-        { message: "Invalid role specified!", status: "error" },
+        {
+          message: "Invalid role specified!",
+          status: "error",
+          data: { yourRole: role, requiredRoles: FriendsRole },
+        },
         { status: 400 }
       );
     }

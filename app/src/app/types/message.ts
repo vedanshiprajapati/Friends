@@ -3,12 +3,12 @@ export interface Message {
   content: string;
   createdAt: Date;
   updatedAt: Date;
-  image?: string;
+  image: string | null;
   isEdited: boolean;
   isReadList: string[];
   readBy?: {
     id: string;
-    role: role;
+    role: FriendsRole;
     user: {
       id: string;
       image: string;
@@ -27,30 +27,11 @@ export interface Message {
   };
 }
 
-enum role {
+export enum FriendsRole {
   ROSS,
   JOEY,
   RACHEL,
   CHANDLER,
   MONICA,
-  PHEOBE,
-}
-
-export interface DmMessage {
-  id: string;
-  content: string;
-  createdAt: Date;
-  updatedAt: Date;
-  image?: string;
-  isEdited: boolean;
-  isReadList: string[];
-  senderId: string;
-  sender: {
-    name: string;
-    username: string;
-  };
-  receiver?: {
-    name: string;
-    username: string;
-  };
+  PHOEBE,
 }

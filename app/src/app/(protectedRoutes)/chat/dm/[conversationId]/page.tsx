@@ -1,6 +1,3 @@
-import ChatBox from "@/app/(protectedRoutes)/chat/_components/Chatbox/ChatBox";
-import DynamicChatBox from "../../_components/Chatbox/DynamicChatBox";
-import { getIndividualDm } from "@/app/_actions/getIndividualDm";
 import DmChatBox from "../_components/DmChatBox";
 
 interface Iparams {

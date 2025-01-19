@@ -24,7 +24,10 @@ const AvatarImage = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <img
     ref={ref}
-    className={mergeClassNames("aspect-square h-full w-full", className)}
+    className={mergeClassNames(
+      "aspect-square h-full w-full rounded-full border-0",
+      className
+    )}
     {...props}
   />
 ));
