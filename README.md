@@ -1,6 +1,3 @@
-<<<<<<< Updated upstream
-
-=======
 ```
 Friends
 ├─ .DS_Store
@@ -1922,4 +1919,5 @@ Friends
    ├─ tailwind.config.ts
    └─ tsconfig.json
 ```
->>>>>>> Stashed changes
+
+> > > > > > > Stashed changes
