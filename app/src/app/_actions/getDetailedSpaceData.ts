@@ -13,28 +13,47 @@ export const getDetailedSpaceData = async () => {
       },
     },
     include: {
+      members: {
+        select: {
+          id: true,
+          role: true,
+          user: {
+            select: {
+              id: true,
+              image: true,
+              name: true,
+              username: true,
+              isPrivate: true,
+            },
+          },
+        },
+      },
       messages: {
         take: 1, // Get the most recent message
         orderBy: { createdAt: "desc" },
         select: {
           content: true,
           createdAt: true,
+          image: true,
           sender: {
             select: {
               id: true,
               role: true,
+              user: {
+                select: {
+                  id: true,
+                  image: true,
+                  name: true,
+                  username: true,
+                  isPrivate: true,
+                },
+              },
             },
           },
         },
       },
     },
   });
-
-  const detailedSpaces = spaces.map((space) => ({
-    id: space.id,
-    name: space.name,
-    lastMessage: space.messages[0] || null,
-  }));
-
-  return detailedSpaces;
+  console.log(spaces);
+  return spaces;
 };

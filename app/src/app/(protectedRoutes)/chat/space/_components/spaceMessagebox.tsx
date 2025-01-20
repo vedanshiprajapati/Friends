@@ -16,7 +16,7 @@ const SpaceMessageBox = ({
   currentUserId,
   isLast,
 }: SpaceMessageBoxProps) => {
-  const isOwnMessage = msg.sender.id === currentUserId;
+  const isOwnMessage = msg.sender.user.id === currentUserId;
 
   const formatMessageTime = (messageTime: string) => {
     const date = new Date(messageTime);

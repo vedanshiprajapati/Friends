@@ -72,7 +72,7 @@ const SpaceMessageList = ({
     element.addEventListener("scroll", handleScroll);
     return () => element.removeEventListener("scroll", handleScroll);
   }, [handleScroll]);
-
+  const reversedMessages = [...messages].reverse();
   return (
     <div ref={listRef} className="flex-1 overflow-y-auto px-4">
       <div className="flex flex-col justify-end min-h-full">
@@ -81,7 +81,7 @@ const SpaceMessageList = ({
             <Loader />
           </div>
         )}
-        {messages.map((msg, i) => (
+        {reversedMessages.map((msg, i) => (
           <SpaceMessageBox
             key={msg.id}
             msg={msg}

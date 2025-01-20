@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { X, Link, Bell, Users, Image } from "lucide-react";
 import { InviteCodeBox } from "./InviteCodeBox";
+import { Space } from "@/app/types/space";
 
 const SpaceInfo = ({ space, onClose }: { space: any; onClose: () => void }) => {
   const [activeTab, setActiveTab] = useState("members");

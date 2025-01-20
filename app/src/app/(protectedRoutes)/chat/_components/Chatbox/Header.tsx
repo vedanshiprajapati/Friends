@@ -6,21 +6,33 @@ import {
   ArrowLeft,
   ChevronDown,
   EllipsisVertical,
+  Maximize2,
   Search,
   Users,
+  X,
 } from "lucide-react";
-import { useRouter, useSearchParams } from "next/navigation";
-import { useState } from "react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useMemo, useState } from "react";
 
 interface HeaderProps {
   user?: otherUser;
   spaceData?: Space;
+  id: string;
 }
 
-export const Header = ({ user, spaceData }: HeaderProps) => {
+export const Header = ({ user, spaceData, id }: HeaderProps) => {
   const route = useRouter();
   // const [activeTab, setActiveTab] = useState<"Chat" | "Shared">("Chat");
   const searchParams = useSearchParams();
+  const path = usePathname();
+  const isChatboxInHome = useMemo(() => {
+    if (path === "/chat/home") {
+      return true;
+    } else {
+      return false;
+    }
+  }, [path]);
+  const [showChatBox, setShowChatbox] = useState();
   const showInfo = searchParams.get("info") === "true";
 
   const toggleInfo = () => {
@@ -33,6 +45,7 @@ export const Header = ({ user, spaceData }: HeaderProps) => {
     }
     route.push(`${window.location.pathname}?${params.toString()}`);
   };
+
   // Common header content
   const headerContent = spaceData
     ? {
@@ -58,14 +71,27 @@ export const Header = ({ user, spaceData }: HeaderProps) => {
   return (
     <div className="bg-white border-b border-t border-lavender rounded-t-2xl">
       <div className="flex items-center px-4 h-14">
-        <button
-          className="p-2 hover:bg-purple/10 rounded-full"
-          onClick={() => {
-            route.back();
-          }}
-        >
-          <ArrowLeft size={20} className="text-deepPurple" />
-        </button>
+        {isChatboxInHome ? (
+          <button
+            className="p-2 hover:bg-purple/10 rounded-full"
+            onClick={() => {
+              route.push(
+                `/chat/${headerContent.isSpace ? "space" : "dm"}/${id}`
+              );
+            }}
+          >
+            <Maximize2 size={20} className="text-deepPurple" />
+          </button>
+        ) : (
+          <button
+            className="p-2 hover:bg-purple/10 rounded-full"
+            onClick={() => {
+              route.back();
+            }}
+          >
+            <ArrowLeft size={20} className="text-deepPurple" />
+          </button>
+        )}
 
         <div
           className="flex flex-grow items-center ml-2 hover:cursor-pointer"

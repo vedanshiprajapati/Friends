@@ -67,7 +67,7 @@ export async function POST(req: Request) {
         isReadList: [userId!],
       },
     });
-    console.log(newMessage, "MESSAGE NEWWW");
+
     await pusherServer.trigger(conversationId, "messages:new", {
       newMessage,
     });

@@ -1,5 +1,5 @@
 "use client";
-import { CircleCheckBig, Link } from "lucide-react";
+import { CircleCheckBig, Copy, CopyCheck, Link } from "lucide-react";
 import { useState } from "react";
 
 export const InviteCodeBox = ({ inviteCode }: { inviteCode: string }) => {
@@ -24,22 +24,20 @@ export const InviteCodeBox = ({ inviteCode }: { inviteCode: string }) => {
       onClick={() => handleCopyClick(inviteCode)}
     >
       <div className="relative w-5 h-5">
-        <Link
+        <Copy
           className={`absolute w-5 h-5 text-gray-600 transition-opacity duration-300 ${
             isCheck ? "opacity-0" : "opacity-100"
           }`}
         />
-        <CircleCheckBig
+        <CopyCheck
           className={`absolute w-5 h-5 text-green-400 transition-opacity duration-300 ${
             isCheck ? "opacity-100" : "opacity-0"
           }`}
         />
       </div>
       <div className="flex-1 overflow-hidden">
-        <p className="text-sm font-medium">Invite Link</p>
-        <p className="text-xs text-gray-500 truncate">
-          {`https://yourapp.com/invite/${inviteCode}`}
-        </p>
+        <p className="text-sm font-medium">Invite Code</p>
+        <p className="text-xs text-gray-500 truncate">{inviteCode}</p>
       </div>
     </div>
   );

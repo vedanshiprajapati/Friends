@@ -141,7 +141,7 @@ const DmChatBox = ({ id }: { id: string }) => {
   return (
     <div className="flex flex-row h-[calc(100vh-4rem)]">
       <div className="flex flex-col h-[calc(100vh-4rem)] min-w-fit flex-grow central-perk-bg text-black border-b border-t border-x border-lavender rounded-t-2xl mr-1">
-        <Header user={otherUser} />
+        <Header user={otherUser} id={id} />
         <div className="mt-4"></div>
         <DmMessageList
           id={id}

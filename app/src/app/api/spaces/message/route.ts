@@ -85,9 +85,14 @@ export async function POST(req: Request) {
       },
     });
     console.log(newMessage);
-    // Trigger Pusher event
-    // await pusherServer.trigger(spaceId, "messages:new", {
-    //   newMessage,
+    // In your space message POST endpoint
+    await pusherServer.trigger(spaceId, "messages:new", { newMessage });
+
+    // // When marking messages as read
+    // await pusherServer.trigger(`space-${spaceId}`, "message:read", {
+    //   messageId: newMessage.id,
+    //   userId: userId,
+    //   memberInfo: spaceMember,
     // });
 
     // Return success response

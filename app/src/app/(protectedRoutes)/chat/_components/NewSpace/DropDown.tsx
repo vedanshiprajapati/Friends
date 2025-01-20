@@ -35,7 +35,7 @@ export const NewSpaceDropdown = ({
   }, []);
 
   return (
-    <div className="relative inline-block">
+    <div className="relative inline-block z-50">
       {/* Trigger Button */}
       <button
         onClick={() => setIsOpen((prev) => !prev)}
@@ -129,7 +129,7 @@ const DropdownItem = ({
 }) => {
   return (
     <div
-      className="p-2 hover:bg-lightPurple2 rounded cursor-pointer flex items-center"
+      className="p-2 hover:bg-lightPurple2 rounded cursor-pointer flex items-center "
       onClick={onClick}
     >
       <Icon size={18} className="text-deepPurple" />

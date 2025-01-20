@@ -21,6 +21,7 @@ export const getDetailedDmData = async () => {
           content: true,
           createdAt: true,
           isReadList: true,
+          image: true,
           sender: {
             select: {
               id: true,

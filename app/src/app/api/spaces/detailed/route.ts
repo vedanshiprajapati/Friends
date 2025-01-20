@@ -24,16 +24,41 @@ export async function GET(req: Request, res: NextApiResponse) {
         },
       },
       include: {
+        members: {
+          select: {
+            id: true,
+            role: true,
+            user: {
+              select: {
+                id: true,
+                image: true,
+                name: true,
+                username: true,
+                isPrivate: true,
+              },
+            },
+          },
+        },
         messages: {
           take: 1, // Get the most recent message
           orderBy: { createdAt: "desc" },
           select: {
             content: true,
             createdAt: true,
+            image: true,
             sender: {
               select: {
                 id: true,
                 role: true,
+                user: {
+                  select: {
+                    id: true,
+                    image: true,
+                    name: true,
+                    username: true,
+                    isPrivate: true,
+                  },
+                },
               },
             },
           },

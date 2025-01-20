@@ -26,7 +26,7 @@ export async function GET(req: Request, context: { params: Promise<Iparams> }) {
 
   const cursor = new URL(req.url).searchParams.get("cursor");
   console.log(req.url, "REQ URL     CURSOR", cursor);
-  const limit = 20; // Number of messages to fetch per request
+  const limit = 10; // Number of messages to fetch per request
 
   try {
     const conversation = await db.conversation.findUnique({
