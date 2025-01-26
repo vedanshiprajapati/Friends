@@ -1,3 +1,9 @@
+import { Main } from "@/app/(protectedRoutes)/chat/explore/_components/Main";
+
 export default function () {
-  return <div>explore</div>;
+  return (
+    <div>
+      <Main />
+    </div>
+  );
 }

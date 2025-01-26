@@ -1,3 +1,4 @@
+import { FriendsRole } from "@prisma/client";
 import * as z from "zod";
 
 export const LoginSchema = z.object({
@@ -124,3 +125,12 @@ export const StrictRegisterSchema = z.object({
 //   },
 //   { message: "New password is required!", path: ["newPassword"] },
 // );
+
+export const spaceSchema = z.object({
+  name: z.string().min(1, "Space name is required").max(50, "Name is too long"),
+  description: z.string().max(200, "Description is too long").optional(),
+  isPrivate: z.boolean().default(false),
+  role: z.nativeEnum(FriendsRole, {
+    required_error: "Please select a role",
+  }),
+});

@@ -11,6 +11,7 @@ export async function POST(
 ) {
   try {
     const { spaceId } = await context.params;
+
     const token = await getToken({
       req: request,
       secret: process.env.AUTH_SECRET,

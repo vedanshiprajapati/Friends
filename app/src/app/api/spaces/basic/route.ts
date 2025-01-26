@@ -13,7 +13,6 @@ export async function GET(req: Request, res: NextApiResponse) {
       { status: 401 }
     );
   }
-  console.log(token, "TOKENNN");
   const userId = token?.sub;
 
   try {

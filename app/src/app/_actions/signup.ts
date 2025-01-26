@@ -17,7 +17,7 @@ export const signup = async (values: z.infer<typeof RegisterSchema>) => {
 
   const { email, password, name } = validatedFields.data;
   const existingUser = await getUserByEmail(email);
-
+  const image = "/default-image.jpg";
   if (existingUser) {
     return { error: "Email already in use!" };
   }
@@ -27,6 +27,7 @@ export const signup = async (values: z.infer<typeof RegisterSchema>) => {
         email,
         name,
         password,
+        image,
       },
     });
 

@@ -4,19 +4,46 @@ import { PrismaAdapter } from "@auth/prisma-adapter";
 import { db } from "@/app/lib/db";
 import { getUserById } from "@/app/_data/user";
 
+// Add this type declaration at the top
+declare module "next-auth" {
+  interface User {
+    username?: string;
+  }
+
+  interface Session {
+    user: {
+      username?: string;
+    } & DefaultSession["user"];
+  }
+}
+
 export const { auth, handlers, signIn, signOut } = NextAuth({
   pages: {
     signIn: "/auth/signin",
     error: "/auth/error",
   },
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt({ token, user, trigger, session }) {
       if (!token.sub) return token;
 
       const existingUser = await getUserById(token.sub);
       if (!existingUser || "error" in existingUser) return token;
 
       token.username = existingUser.username;
+
+      if (trigger === "update") {
+        // Update token with new session data
+        token.name = session.user.name;
+        token.username = session.user.username;
+        token.image = session.user.image;
+      }
+
+      // If user object exists (during initial login), populate token
+      if (user) {
+        token.name = user.name;
+        token.username = user.username;
+        token.image = user.image;
+      }
 
       return token;
     },

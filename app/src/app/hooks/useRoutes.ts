@@ -21,18 +21,18 @@ const useRoutes = () => {
         href: "/chat/explore",
         active: pathname === "/chat/explore",
       },
-      {
-        label: "Mentions",
-        icon: AtSign,
-        href: "/chat/mentions",
-        active: pathname === "/chat/mentions",
-      },
-      {
-        label: "Starred",
-        icon: Star,
-        href: "/chat/starred",
-        active: pathname === "/chat/starred",
-      },
+      // {
+      //   label: "Mentions",
+      //   icon: AtSign,
+      //   href: "/chat/mentions",
+      //   active: pathname === "/chat/mentions",
+      // },
+      // {
+      //   label: "Starred",
+      //   icon: Star,
+      //   href: "/chat/starred",
+      //   active: pathname === "/chat/starred",
+      // },
     ],
     [pathname]
   );

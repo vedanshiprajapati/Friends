@@ -7,16 +7,7 @@ import { SPACE_CHARACTER_IMAGE } from "@/app/_data/constants";
 import { FriendsRole } from "@prisma/client";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
-
-// Define the Zod schema for form validation
-const spaceSchema = z.object({
-  name: z.string().min(1, "Space name is required").max(50, "Name is too long"),
-  description: z.string().max(200, "Description is too long").optional(),
-  isPrivate: z.boolean().default(false),
-  role: z.nativeEnum(FriendsRole, {
-    required_error: "Please select a role",
-  }),
-});
+import { spaceSchema } from "@/schemas";
 
 // Infer the type of the form data from the schema
 type SpaceFormData = z.infer<typeof spaceSchema>;

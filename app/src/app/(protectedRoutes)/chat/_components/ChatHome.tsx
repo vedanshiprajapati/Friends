@@ -1,7 +1,6 @@
 "use client";
-import React, { ReactNode, useState } from "react";
+import React, { ReactNode, useMemo, useState } from "react";
 import {
-  Menu,
   Search,
   Settings,
   HelpCircle,
@@ -13,24 +12,27 @@ import { NewSpaceDropdown } from "@/app/(protectedRoutes)/chat/_components/NewSp
 import { SpaceCollapsibleSection } from "@/app/(protectedRoutes)/chat/_components/CollapsibleSection/SpaceCollapsibleSection";
 import { DmCollapsibleSection } from "@/app/(protectedRoutes)/chat/_components/CollapsibleSection/DmCollapsibleSection";
 import { ShortCutCollapsibleSection } from "@/app/(protectedRoutes)/chat/_components/CollapsibleSection/ShortCutCollapsibleSection";
-import { CurrentUserAvatar } from "@/app/_components/CurrentUserAvatar";
-import PopUp from "./NewSpace/Popup";
-import AvatarDropdown from "./AvatarDropdown";
+import NewSpacePopUp from "./NewSpace/Popup";
+import AvatarDropdown from "./Avatar/AvatarDropdown";
+import EditProfilePopup from "./Avatar/Popup";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 // Main Component
 const ChatHome = ({ children }: { children: ReactNode }) => {
   const [isOpen, setIsOpen] = useState(false);
-
+  const router = useRouter();
+  const path = usePathname();
+  const searchParams = useSearchParams();
+  const isProfileOpen = useMemo(
+    () => searchParams.get("editProfile") === "true",
+    [path, searchParams]
+  );
   return (
     <div className="flex h-screen bg-lightCream">
       {/* Sidebar */}
       <div className="w-1/5 flex flex-col ">
         {/* New Chat Button */}
-        <div className="flex mt-4">
-          <Menu
-            size={24}
-            className="text-deepPurple mx-4 rounded-full cursor-pointer"
-          />
+        <div className="flex mt-4 mx-4">
           <div className="flex">
             <MessageCircle size={24} color="#674188" className="mr-4" />
             <h1 className="text-xl font-bold m-0" style={{ color: "#674188" }}>
@@ -89,26 +91,17 @@ const ChatHome = ({ children }: { children: ReactNode }) => {
 
         {/* Content */}
         <div className="flex-1 justify-center items-center bg-white rounded-t-2xl">
-          {isOpen && <PopUp isOpen onClose={() => setIsOpen(false)} />}
-          {/* {selectedChat ? (
-            <ChatBox
-              chatName={selectedChat.name}
-              email={selectedChat.email}
-              createdDate={selectedChat.createdDate}
+          {isOpen && <NewSpacePopUp isOpen onClose={() => setIsOpen(false)} />}
+          {isProfileOpen && (
+            <EditProfilePopup
+              isOpen={isProfileOpen}
+              onClose={() => {
+                const params = new URLSearchParams(searchParams);
+                params.delete("editProfile");
+                router.replace(`?${params.toString()}`);
+              }}
             />
-          ) : (
-          <div className="flex items-center h-full justify-center text-deepPurple border">
-            <div className="text-center">
-           
-              <h2 className="text-3xl font-bold mb-2">
-                Welcome to Friends Chat!
-              </h2>
-              <p className="text-gray-600">
-                Select a conversation or start a new one
-              </p>
-            </div>
-          </div>
-          )} */}
+          )}
           {children}
         </div>
       </div>

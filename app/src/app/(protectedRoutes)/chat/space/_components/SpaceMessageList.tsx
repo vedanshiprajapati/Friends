@@ -74,7 +74,7 @@ const SpaceMessageList = ({
   }, [handleScroll]);
   const reversedMessages = [...messages].reverse();
   return (
-    <div ref={listRef} className="flex-1 overflow-y-auto px-4">
+    <div ref={listRef} className="flex-1 overflow-y-auto px-4 pt-4">
       <div className="flex flex-col justify-end min-h-full">
         {isFetchingNextPage && (
           <div className="mx-auto">

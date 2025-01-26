@@ -12,7 +12,7 @@ import {
   X,
 } from "lucide-react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 
 interface HeaderProps {
   user?: otherUser;
@@ -22,7 +22,6 @@ interface HeaderProps {
 
 export const Header = ({ user, spaceData, id }: HeaderProps) => {
   const route = useRouter();
-  // const [activeTab, setActiveTab] = useState<"Chat" | "Shared">("Chat");
   const searchParams = useSearchParams();
   const path = usePathname();
   const isChatboxInHome = useMemo(() => {
@@ -32,12 +31,10 @@ export const Header = ({ user, spaceData, id }: HeaderProps) => {
       return false;
     }
   }, [path]);
-  const [showChatBox, setShowChatbox] = useState();
   const showInfo = searchParams.get("info") === "true";
 
   const toggleInfo = () => {
     const params = new URLSearchParams(searchParams);
-    console.log(params);
     if (showInfo) {
       params.delete("info");
     } else {

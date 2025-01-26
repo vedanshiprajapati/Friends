@@ -7,16 +7,19 @@ import { getDetailedSpaceData } from "@/app/_actions/getDetailedSpaceData";
 import DmChatBox from "../../dm/_components/DmChatBox";
 import SpaceChatBox from "../../space/_components/SpaceChatBox";
 import { formatDistanceToNow } from "date-fns";
-import { CheckCircle2, MessageSquare, Users } from "lucide-react";
+import { Check, Users } from "lucide-react";
 import { useSession } from "next-auth/react";
 import DynamicErrorCard from "@/app/_components/DynamicErrorcard";
 
-const ChatHome = () => {
+const Main = () => {
   const session = useSession();
   const currentUserId = session.data?.user.id;
   const [selectedTab, setSelectedTab] = useState<"dm" | "space">("dm");
   const [selectedConversation, setSelectedConversation] = useState<
     string | null
+  >(null);
+  const [selectedConversationType, setSelectedConversationType] = useState<
+    "dm" | "space" | null
   >(null);
 
   const { data: dms } = useQuery({
@@ -42,6 +45,7 @@ const ChatHome = () => {
       </div>
     );
   }
+
   const getLastMessagePreview = (content: string) => {
     if (!content) return "No messages yet";
     return content.length > 50 ? `${content.substring(0, 50)}...` : content;
@@ -55,6 +59,7 @@ const ChatHome = () => {
     sender,
     image,
     isOwnMessage,
+    type,
   }: {
     id: string;
     name: string | null;
@@ -63,12 +68,16 @@ const ChatHome = () => {
     sender: string | null;
     image: string | null;
     isOwnMessage: boolean;
+    type: "dm" | "space";
   }) => {
     const initial = name?.charAt(0).toUpperCase() || "?";
 
     return (
       <div
-        onClick={() => setSelectedConversation(id)}
+        onClick={() => {
+          setSelectedConversation(id);
+          setSelectedConversationType(type); // Set the type of the selected conversation
+        }}
         className={`p-3 h-16 cursor-pointer transition-all duration-200 hover:bg-lightPurple2 flex items-center gap-3 ${
           selectedConversation === id ? "bg-lightPurple1" : ""
         }`}
@@ -89,7 +98,7 @@ const ChatHome = () => {
 
         <div className="flex-1 min-w-0">
           <div className="flex justify-between items-center mb-0.5">
-            <span className="font-medium text-[15px] text-gray-900 truncate pr-2">
+            <span className="font-medium text-sm text-gray-900 truncate pr-2">
               {name || "Unknown"}
             </span>
             <span className="text-[13px] text-gray-500 flex-shrink-0">
@@ -130,7 +139,7 @@ const ChatHome = () => {
                 </>
               ) : (
                 <>
-                  <CheckCircle2 size={18} />
+                  <Check size={18} />
                   <span>Space</span>
                 </>
               )}
@@ -153,6 +162,7 @@ const ChatHome = () => {
                 sender={dm.lastMessage?.sender?.name}
                 image={dm.participants[0].image}
                 isOwnMessage={dm.lastMessage.sender.id === currentUserId}
+                type="dm"
               />
             ))}
 
@@ -177,6 +187,7 @@ const ChatHome = () => {
                   isOwnMessage={
                     space.messages[0]?.sender?.user.id === currentUserId
                   }
+                  type="space"
                 />
               );
             })}
@@ -185,7 +196,7 @@ const ChatHome = () => {
 
       <div className="flex-1 bg-white">
         {selectedConversation ? (
-          selectedTab === "dm" ? (
+          selectedConversationType === "dm" ? (
             <DmChatBox id={selectedConversation} />
           ) : (
             <SpaceChatBox id={selectedConversation} />
@@ -204,6 +215,7 @@ const ChatHome = () => {
     </div>
   );
 };
+
 export const ConversationItemShimmer = () => {
   return (
     <div className="p-3 cursor-pointer flex items-center gap-3">
@@ -223,4 +235,5 @@ export const ConversationItemShimmer = () => {
     </div>
   );
 };
-export default ChatHome;
+
+export default Main;
