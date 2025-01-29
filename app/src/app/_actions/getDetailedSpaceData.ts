@@ -54,6 +54,6 @@ export const getDetailedSpaceData = async () => {
       },
     },
   });
-  console.log(spaces);
+
   return spaces;
 };

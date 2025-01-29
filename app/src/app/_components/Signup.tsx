@@ -3,34 +3,42 @@ import React, { useState } from "react";
 import { Lock, Mail, MoveLeft, User, Coffee, ArrowRight } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { useForm, SubmitHandler } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { signup } from "@/app/_actions/signup";
 import { DEFAULT_LOGIN_REDIRECT } from "@/routes";
 import { signIn } from "next-auth/react";
-import { useMutation } from "@tanstack/react-query";
+import { z } from "zod";
+import { StrictRegisterSchema } from "@/schemas";
+import { zodResolver } from "@hookform/resolvers/zod";
 
-type SignupFormInputs = {
-  email: string;
-  password: string;
-  name: string;
-};
+type SignupSchemaType = z.infer<typeof StrictRegisterSchema>;
 
 const SignupPage: React.FC = () => {
+  const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+
   const {
     register,
     handleSubmit,
-    formState: { errors, isSubmitting },
-  } = useForm<SignupFormInputs>();
-
-  const signupMutation = useMutation({
-    mutationFn: (data: SignupFormInputs) => signup(data),
-    onSuccess: (data) => {
-      console.log("Signup successful!");
-    },
+    formState: { errors },
+  } = useForm<SignupSchemaType>({
+    resolver: zodResolver(StrictRegisterSchema),
   });
 
-  const onSubmit: SubmitHandler<SignupFormInputs> = (data) => {
-    signupMutation.mutate(data);
+  const onSubmit = async (data: SignupSchemaType) => {
+    try {
+      setIsLoading(true);
+      setError(null);
+      const response = await signup(data);
+
+      if (response?.status === "error") {
+        setError(response.message);
+      }
+    } catch (err) {
+      setError("An unexpected error occurred");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const SigninWithGoogle = () => {
@@ -57,7 +65,6 @@ const SignupPage: React.FC = () => {
             border: "4px solid #674188",
           }}
         >
-          {/* Back button moved to top-left corner */}
           <Link href={"/"} className="absolute top-4 left-4">
             <MoveLeft
               className="border-deepPurple p-1 border-2 rounded-full transform hover:scale-110"
@@ -74,74 +81,91 @@ const SignupPage: React.FC = () => {
             Join the Gang
           </h1>
 
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-            <div className="relative">
-              <Mail
-                className="absolute left-3 top-1/2 transform -translate-y-1/2"
-                color="#674188"
-              />
-              <input
-                type="email"
-                placeholder="Email(Required)"
-                {...register("email", { required: "Email is required" })}
-                disabled={isSubmitting || signupMutation.isPending}
-                className="w-full pl-10 pr-4 py-3 rounded-lg"
-                style={{
-                  backgroundColor: "#F7EFE5",
-                  color: "#674188",
-                  border: "2px solid #674188",
-                }}
-              />
+          {error && (
+            <div className="mb-4 p-3 rounded bg-red-100 border border-red-400 text-red-700">
+              {error}
+            </div>
+          )}
+
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+            {/* Email Input Group */}
+            <div className="space-y-1">
+              <div className="relative h-12">
+                <Mail
+                  className="absolute left-3 top-1/2 transform -translate-y-1/2 z-10"
+                  color="#674188"
+                />
+                <input
+                  type="email"
+                  placeholder="Email(Required)"
+                  {...register("email")}
+                  disabled={isLoading}
+                  className="w-full h-full pl-10 pr-4 rounded-lg"
+                  style={{
+                    backgroundColor: "#F7EFE5",
+                    color: "#674188",
+                    border: errors.email
+                      ? "2px solid #EF4444"
+                      : "2px solid #674188",
+                  }}
+                />
+              </div>
               {errors.email && (
-                <p className="text-red-500 text-sm mt-1">
-                  {errors.email.message}
-                </p>
+                <p className="text-red-500 text-sm">{errors.email.message}</p>
               )}
             </div>
 
-            <div className="relative">
-              <User
-                className="absolute left-3 top-1/2 transform -translate-y-1/2"
-                color="#674188"
-              />
-              <input
-                type="text"
-                placeholder="Name(Required)"
-                {...register("name", { required: "Name is required" })}
-                disabled={isSubmitting || signupMutation.isPending}
-                className="w-full pl-10 pr-4 py-3 rounded-lg"
-                style={{
-                  backgroundColor: "#F7EFE5",
-                  color: "#674188",
-                  border: "2px solid #674188",
-                }}
-              />
+            {/* Name Input Group */}
+            <div className="space-y-1">
+              <div className="relative h-12">
+                <User
+                  className="absolute left-3 top-1/2 transform -translate-y-1/2 z-10"
+                  color="#674188"
+                />
+                <input
+                  type="text"
+                  placeholder="Name(Required)"
+                  {...register("name")}
+                  disabled={isLoading}
+                  className="w-full h-full pl-10 pr-4 rounded-lg"
+                  style={{
+                    backgroundColor: "#F7EFE5",
+                    color: "#674188",
+                    border: errors.name
+                      ? "2px solid #EF4444"
+                      : "2px solid #674188",
+                  }}
+                />
+              </div>
               {errors.name && (
-                <p className="text-red-500 text-sm mt-1">
-                  {errors.name.message}
-                </p>
+                <p className="text-red-500 text-sm">{errors.name.message}</p>
               )}
             </div>
 
-            <div className="relative">
-              <Lock
-                className="absolute left-3 top-1/2 transform -translate-y-1/2"
-                color="#674188"
-              />
-              <input
-                type="password"
-                placeholder="Password(Required)"
-                {...register("password", { required: "Password is required" })}
-                disabled={isSubmitting || signupMutation.isPending}
-                className="w-full pl-10 pr-4 py-3 rounded-lg"
-                style={{
-                  backgroundColor: "#F7EFE5",
-                  color: "#674188",
-                  border: "2px solid #674188",
-                }}
-              />
+            {/* Password Input Group */}
+            <div className="space-y-1">
+              <div className="relative h-12">
+                <Lock
+                  className="absolute left-3 top-1/2 transform -translate-y-1/2 z-10"
+                  color="#674188"
+                />
+                <input
+                  type="password"
+                  placeholder="Password(Required)"
+                  {...register("password")}
+                  disabled={isLoading}
+                  className="w-full h-full pl-10 pr-4 rounded-lg"
+                  style={{
+                    backgroundColor: "#F7EFE5",
+                    color: "#674188",
+                    border: errors.password
+                      ? "2px solid #EF4444"
+                      : "2px solid #674188",
+                  }}
+                />
+              </div>
               {errors.password && (
-                <p className="text-red-500 text-sm mt-1">
+                <p className="text-red-500 text-sm">
                   {errors.password.message}
                 </p>
               )}
@@ -149,14 +173,17 @@ const SignupPage: React.FC = () => {
 
             <button
               type="submit"
-              disabled={isSubmitting || signupMutation.isPending}
-              className="w-full py-3 font-bold bg-deepPurple text-cream"
+              disabled={isLoading}
+              className="w-full py-3 font-bold transition-all duration-300 disabled:opacity-50"
+              style={{
+                backgroundColor: "#674188",
+                color: "#F7EFE5",
+              }}
             >
-              {isSubmitting ? "Loading..." : "Sign up"}
+              {isLoading ? "Signing up..." : "Sign up"}
             </button>
           </form>
 
-          <p className="text-red-500">{signupMutation.error?.message}</p>
           <div className="flex items-center my-6">
             <div className="w-auto h-1 bg-[#674188] flex-grow rounded-full"></div>
             <div className="mx-4 text-[#674188]">OR</div>
@@ -164,7 +191,7 @@ const SignupPage: React.FC = () => {
           </div>
 
           <button
-            className="w-full py-3 rounded-lg font-bold transition-all duration-300 hover:scale-105 flex items-center justify-center"
+            className="w-full py-3 font-bold transition-all duration-300 flex items-center justify-center"
             style={{
               backgroundColor: "#674188",
               color: "#F7EFE5",
@@ -177,7 +204,7 @@ const SignupPage: React.FC = () => {
               alt="google logo"
               height={30}
               width={30}
-              className="p-1"
+              className="p-1 border-0"
             />
           </button>
 

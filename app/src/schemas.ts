@@ -2,13 +2,15 @@ import { FriendsRole } from "@prisma/client";
 import * as z from "zod";
 
 export const LoginSchema = z.object({
-  email: z.string().email({ message: "Email is required / Invalid email" }),
+  email: z.string().email({ message: "Email is required." }),
 
   // changing zod validation error message on the schema
   // email: z.string().email({message: "Email is required"}), // message - only avail on 2nd & chain onwards
   // email: z.string(invalid_type_error: "Must be a string").email(), // invalid_type_error - avail on first chain
 
-  password: z.string().min(1, { message: "Password is required" }),
+  password: z
+    .string({ message: "Password is required!" })
+    .min(6, { message: "Minimum 6 characters required!" }),
   // not recommended to limit pword length for login above 1 since required min length may change and old passwords may have old min lengths
   // okay to add .min() to password for RegisterSchema
 
@@ -16,9 +18,11 @@ export const LoginSchema = z.object({
 });
 
 export const RegisterSchema = z.object({
-  email: z.string().email({ message: "Email is required / Invalid email" }),
-  password: z.string().min(6, { message: "Minimum 6 characters required" }),
-  name: z.string().min(1, { message: "Name is required" }),
+  email: z.string().email({ message: "Email is required!" }),
+  password: z
+    .string({ message: "Password is required!" })
+    .min(6, { message: "Minimum 6 characters required!" }),
+  name: z.string().min(1, { message: "Name is required!" }),
 });
 
 // for future use when i add react-hook-form
@@ -26,6 +30,7 @@ export const StrictLoginSchema = z.object({
   email: z
     .string()
     .trim()
+    .toLowerCase()
     .email({ message: "Email is required / Invalid email" })
     .min(5, { message: "Email must be at least 5 characters long" }),
 
@@ -45,6 +50,7 @@ export const StrictRegisterSchema = z.object({
   email: z
     .string()
     .trim()
+    .toLowerCase()
     .email({ message: "Email is required / Invalid email" })
     .min(5, { message: "Email must be at least 5 characters long" }),
 

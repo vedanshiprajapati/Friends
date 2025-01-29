@@ -54,7 +54,7 @@ const Main = () => {
   const ConversationItem = ({
     id,
     name,
-    lastMessage,
+    lastMessage = "No Messages sent",
     timestamp,
     sender,
     image,
@@ -63,7 +63,7 @@ const Main = () => {
   }: {
     id: string;
     name: string | null;
-    lastMessage: string;
+    lastMessage?: string;
     timestamp: Date;
     sender: string | null;
     image: string | null;
@@ -71,15 +71,16 @@ const Main = () => {
     type: "dm" | "space";
   }) => {
     const initial = name?.charAt(0).toUpperCase() || "?";
-
     return (
       <div
         onClick={() => {
           setSelectedConversation(id);
           setSelectedConversationType(type); // Set the type of the selected conversation
         }}
-        className={`p-3 h-16 cursor-pointer transition-all duration-200 hover:bg-lightPurple2 flex items-center gap-3 ${
-          selectedConversation === id ? "bg-lightPurple1" : ""
+        className={`p-3 h-16 cursor-pointer transition-all duration-200 flex items-center gap-3 ${
+          selectedConversation === id
+            ? "bg-lightPurple1"
+            : "hover:bg-lightPurple2"
         }`}
       >
         {image ? (
@@ -146,51 +147,70 @@ const Main = () => {
             </div>
           )}
         </div>
-
         <div className="flex-1 overflow-y-auto">
           {isLoading &&
             [1, 2, 3].map((index) => <ConversationItemShimmer key={index} />)}
           {!isLoading &&
             selectedTab === "dm" &&
-            dms?.map((dm) => (
-              <ConversationItem
-                key={dm.id}
-                id={dm.id}
-                name={dm.participants[0].name}
-                lastMessage={dm.lastMessage?.content || ""}
-                timestamp={new Date(dm.lastMessage?.createdAt || Date.now())}
-                sender={dm.lastMessage?.sender?.name}
-                image={dm.participants[0].image}
-                isOwnMessage={dm.lastMessage.sender.id === currentUserId}
-                type="dm"
-              />
+            (dms && dms?.length > 0 ? (
+              dms?.map((dm) => (
+                <ConversationItem
+                  key={dm.id}
+                  id={dm.id}
+                  name={dm.participants[0].name}
+                  lastMessage={dm.lastMessage?.content}
+                  timestamp={
+                    new Date(dm.lastMessage?.createdAt || dm.updatedAt)
+                  }
+                  sender={dm.lastMessage?.sender?.name}
+                  image={dm.participants[0].image}
+                  isOwnMessage={dm.lastMessage?.sender?.id === currentUserId}
+                  type="dm"
+                />
+              ))
+            ) : (
+              <div className="flex flex-col justify-center items-center h-full -mt-8">
+                <p className="text-lg font-medium mb-2">Conversations</p>
+                <p className="text-sm">
+                  Recent conversations will be shown here
+                </p>
+              </div>
             ))}
 
           {!isLoading &&
             selectedTab === "space" &&
-            spaces?.map((space) => {
-              return (
-                <ConversationItem
-                  key={space.id}
-                  id={space.id}
-                  name={space.name}
-                  image={space.image}
-                  lastMessage={
-                    space.messages[0]?.image
-                      ? "Sent an image"
-                      : space.messages[0]?.content || ""
-                  }
-                  timestamp={
-                    new Date(space.messages[0]?.createdAt || space.createdAt)
-                  }
-                  sender={space.messages[0]?.sender?.role}
-                  isOwnMessage={
-                    space.messages[0]?.sender?.user.id === currentUserId
-                  }
-                  type="space"
-                />
-              );
-            })}
+            (spaces && spaces.length > 0 ? (
+              spaces?.map((space) => {
+                return (
+                  <ConversationItem
+                    key={space.id}
+                    id={space.id}
+                    name={space.name}
+                    image={space.image}
+                    lastMessage={
+                      space.messages[0]?.image
+                        ? "Sent an image"
+                        : space.messages[0]?.content || ""
+                    }
+                    timestamp={
+                      new Date(space.messages[0]?.createdAt || space.createdAt)
+                    }
+                    sender={space.messages[0]?.sender?.role}
+                    isOwnMessage={
+                      space.messages[0]?.sender?.user.id === currentUserId
+                    }
+                    type="space"
+                  />
+                );
+              })
+            ) : (
+              <div className="flex flex-col justify-center items-center h-full -mt-8">
+                <p className="text-lg font-medium mb-2">Conversations</p>
+                <p className="text-sm">
+                  Recent conversations will be shown here
+                </p>
+              </div>
+            ))}
         </div>
       </div>
 
@@ -220,17 +240,17 @@ export const ConversationItemShimmer = () => {
   return (
     <div className="p-3 cursor-pointer flex items-center gap-3">
       {/* Avatar Shimmer */}
-      <div className="w-10 h-10 rounded-full bg-gray-200 animate-pulse flex-shrink-0"></div>
+      <div className="w-10 h-10 rounded-full bg-lightPurple1 animate-pulse flex-shrink-0"></div>
 
       {/* Content Shimmer */}
       <div className="flex-1 min-w-0">
         {/* Name and Timestamp Shimmer */}
         <div className="flex justify-between items-center mb-0.5">
-          <div className="h-4 w-2/4 bg-gray-200 animate-pulse rounded"></div>
+          <div className="h-4 w-2/4 bg-lightPurple1 animate-pulse rounded"></div>
         </div>
 
         {/* Last Message Shimmer */}
-        <div className="h-3 w-full bg-gray-200 animate-pulse rounded"></div>
+        <div className="h-3 w-full bg-lightPurple1 animate-pulse rounded"></div>
       </div>
     </div>
   );

@@ -16,13 +16,14 @@ export async function POST(req: Request, res: NextApiResponse) {
   const userId = token.sub;
   try {
     const { name, description, isPrivate, isRandom, role } = await req.json();
-
+    const image = "/group-image.png";
     const group = await db.space.create({
       data: {
         name,
         description,
         isPrivate,
         isRandom,
+        image,
         creatorId: userId,
         members: {
           create: { userId, role: role, isAdmin: true },

@@ -3,7 +3,6 @@ import { auth } from "@/auth";
 
 export const getUserByEmail = async (email: string) => {
   try {
-    console.log(email);
     const user = await db.user.findUnique({ where: { email } });
     return user;
   } catch (error: any) {

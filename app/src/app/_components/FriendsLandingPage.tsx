@@ -27,19 +27,17 @@ const FriendsLandingPage: React.FC = () => {
           <MessageCircle size={40} className="mr-2 text-deepPurple" />
           <h1 className="text-2xl font-bold text-deepPurple">Friends Chat</h1>
         </div>
-        <div>
-          <nav className="flex space-x-6 bg-cream">
-            <Link href={"/auth/signin"} className="border-none">
-              <button className="flex items-center px-4 py-2 shadow-none text-cream bg-deepPurple">
-                Sign In
-              </button>
-            </Link>
-            <Link href={"/auth/signup"} className="border-none">
-              <button className="px-4 py-2 bg-lavender text-deepPurple">
-                Sign Up
-              </button>
-            </Link>
-          </nav>
+        <div className="flex space-x-6 bg-cream">
+          <Link href={"/auth/signin"} className="border-none">
+            <button className="flex items-center px-4 py-2 shadow-none text-cream bg-deepPurple">
+              Sign In
+            </button>
+          </Link>
+          <Link href={"/auth/signup"} className="border-none">
+            <button className="px-4 py-2 bg-lavender text-deepPurple">
+              Sign Up
+            </button>
+          </Link>
         </div>
       </header>
 
@@ -69,7 +67,7 @@ const FriendsLandingPage: React.FC = () => {
                 className="border-none"
               >
                 <button className="flex items-center px-6 py-3  text-lg font-bold  bg-lavender text-deepPurple">
-                  Watch Trailer <PlayCircle className="mr-2" />
+                  Watch Trailer <PlayCircle className="ml-2" />
                 </button>
               </Link>
             </div>

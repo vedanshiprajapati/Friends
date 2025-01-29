@@ -1,5 +1,9 @@
 "use Client";
 import { Avatar, AvatarImage } from "@/app/_components/ui/Avatar";
+import {
+  DEFAULT_PROFILE_IMAGE,
+  DEFAULT_SPACE_IMAGE,
+} from "@/app/_data/constants";
 import { otherUser } from "@/app/types/user";
 import { Space } from "@prisma/client";
 import {
@@ -25,7 +29,7 @@ export const Header = ({ user, spaceData, id }: HeaderProps) => {
   const searchParams = useSearchParams();
   const path = usePathname();
   const isChatboxInHome = useMemo(() => {
-    if (path === "/chat/home") {
+    if (path === "/chat/home" || path === "/chat/explore") {
       return true;
     } else {
       return false;
@@ -51,7 +55,7 @@ export const Header = ({ user, spaceData, id }: HeaderProps) => {
         subtitle: spaceData.description,
         isSpace: true,
         spaceId: spaceData.id,
-        image: spaceData.image,
+        image: spaceData.image ? spaceData.image : DEFAULT_SPACE_IMAGE,
       }
     : user
     ? {
@@ -59,7 +63,7 @@ export const Header = ({ user, spaceData, id }: HeaderProps) => {
         initial: user.name && user.name[0].toUpperCase(),
         subtitle: user.username ? `@${user.username}` : "",
         isSpace: false,
-        image: user.image,
+        image: user.image ? user.image : DEFAULT_PROFILE_IMAGE,
       }
     : null;
 

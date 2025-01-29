@@ -1,15 +1,15 @@
 "use server";
 
 import * as z from "zod";
-import { RegisterSchema } from "@/schemas";
+import { StrictRegisterSchema } from "@/schemas";
 import { signIn } from "@/auth";
 import { DEFAULT_LOGIN_REDIRECT } from "@/routes";
 import { AuthError } from "next-auth";
 import { getUserByEmail } from "@/app/_data/user";
 import { db } from "@/app/lib/db";
 
-export const signup = async (values: z.infer<typeof RegisterSchema>) => {
-  const validatedFields = RegisterSchema.safeParse(values);
+export const signup = async (values: z.infer<typeof StrictRegisterSchema>) => {
+  const validatedFields = StrictRegisterSchema.safeParse(values);
 
   if (!validatedFields.success) {
     return { error: "Invalid fields!" };
@@ -19,7 +19,7 @@ export const signup = async (values: z.infer<typeof RegisterSchema>) => {
   const existingUser = await getUserByEmail(email);
   const image = "/default-image.jpg";
   if (existingUser) {
-    return { error: "Email already in use!" };
+    return { message: "Email already in use!", status: "error" };
   }
   try {
     const user = await db.user.create({
@@ -40,16 +40,21 @@ export const signup = async (values: z.infer<typeof RegisterSchema>) => {
     if (error instanceof AuthError) {
       switch (error.type) {
         case "CredentialsSignin": {
-          return { error: "Invalid Credentials!", message: error };
+          return {
+            message: "Invalid Credentials!",
+            error: error,
+            status: "error",
+          };
         }
         default:
           return {
             message: "something went wrong while Signing up!",
             error: error,
+            status: "error",
           };
       }
     }
     throw error;
   }
-  return { success: "user is created!" };
+  return { message: "user is created!", status: "success" };
 };

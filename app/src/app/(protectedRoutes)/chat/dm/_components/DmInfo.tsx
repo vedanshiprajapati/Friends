@@ -89,7 +89,6 @@ const DmInfo = ({
             {data.messages
               .filter((msg: dmMessageType) => msg.image)
               .map((msg: dmMessageType) => {
-                console.log(msg.image, "IMAGEEE");
                 return (
                   <div
                     key={msg.id}

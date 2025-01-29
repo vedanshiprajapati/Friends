@@ -2,7 +2,7 @@
 
 import React, { useState, useRef, useEffect } from "react";
 import { LogOut, User, Settings } from "lucide-react";
-import { useSession } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 interface AvatarDropdownProps {
@@ -55,8 +55,9 @@ const AvatarDropdown: React.FC<AvatarDropdownProps> = ({
     setIsOpen(false);
   };
 
-  const handleLogout = () => {
-    console.log("Logout clicked");
+  const handleLogout = async () => {
+    await signOut();
+    window.location.reload();
     setIsOpen(false);
   };
 

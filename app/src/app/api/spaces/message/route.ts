@@ -8,7 +8,6 @@ export async function POST(req: Request) {
     // Parse the request body
     const body = await req.json();
     const { content, image, spaceId } = body;
-    console.log(content, " In backend side /message route");
 
     // Validate required fields
     if (!content && !image) {
@@ -84,7 +83,7 @@ export async function POST(req: Request) {
         },
       },
     });
-    console.log(newMessage);
+
     // In your space message POST endpoint
     await pusherServer.trigger(spaceId, "messages:new", { newMessage });
 

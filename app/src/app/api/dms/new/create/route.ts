@@ -15,7 +15,7 @@ export async function POST(req: Request, res: NextApiResponse) {
 
   const senderId = token?.sub!!;
 
-  const { username, content } = await req.json();
+  const { username } = await req.json();
   try {
     const receiver = await db.user.findUnique({ where: { username } });
 
@@ -47,19 +47,10 @@ export async function POST(req: Request, res: NextApiResponse) {
       });
     }
 
-    const message = await db.directMessage.create({
-      data: {
-        content,
-        senderId,
-        receiverId: receiver.id,
-        conversationId: conversation.id,
-      },
-    });
-
     return NextResponse.json(
       {
-        data: message,
-        message: "Message request is sent successfully",
+        data: conversation,
+        message: "Conversation is created successfully",
         status: "success",
       },
       { status: 201 }

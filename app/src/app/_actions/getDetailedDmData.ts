@@ -8,6 +8,9 @@ export const getDetailedDmData = async () => {
   const userId = session?.user.id;
 
   const conversations = await db.conversation.findMany({
+    orderBy: {
+      updatedAt: "desc",
+    },
     where: {
       participants: {
         some: { id: userId },
@@ -47,6 +50,8 @@ export const getDetailedDmData = async () => {
 
   const detailedDMs = conversations.map((conversation) => ({
     id: conversation.id,
+    createdAt: conversation.createdAt,
+    updatedAt: conversation.updatedAt,
     participants: conversation.participants.filter(
       (user) => user.id !== userId
     ),

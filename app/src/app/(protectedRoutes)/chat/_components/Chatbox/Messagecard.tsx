@@ -20,7 +20,7 @@ const MessageBox = ({
   chatType,
 }: MessageBoxProps) => {
   const isOwnMessage = msg?.sender?.id === currentUserId;
-
+  console.log(isOwnMessage, msg?.sender.id, currentUserId);
   // Add a check for msg.sender
   if (!msg.sender) {
     return null; // or render a fallback UI

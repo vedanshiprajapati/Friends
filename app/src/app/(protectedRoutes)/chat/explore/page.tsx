@@ -1,9 +1,5 @@
-import { Main } from "@/app/(protectedRoutes)/chat/explore/_components/Main";
+import Main from "@/app/(protectedRoutes)/chat/explore/_components/Main";
 
 export default function () {
-  return (
-    <div>
-      <Main />
-    </div>
-  );
+  return <Main />;
 }

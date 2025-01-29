@@ -4,7 +4,6 @@ import { PrismaAdapter } from "@auth/prisma-adapter";
 import { db } from "@/app/lib/db";
 import { getUserById } from "@/app/_data/user";
 
-// Add this type declaration at the top
 declare module "next-auth" {
   interface User {
     username?: string;
@@ -13,6 +12,7 @@ declare module "next-auth" {
   interface Session {
     user: {
       username?: string;
+      image?: string;
     } & DefaultSession["user"];
   }
 }
@@ -32,27 +32,34 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
       token.username = existingUser.username;
 
       if (trigger === "update") {
-        // Update token with new session data
-        token.name = session.user.name;
-        token.username = session.user.username;
-        token.image = session.user.image;
+        return {
+          ...token,
+          name: session.user.name ?? token.name,
+          picture: session.user.image ?? token.picture,
+          username: session.user.username ?? token.username,
+        };
       }
 
-      // If user object exists (during initial login), populate token
       if (user) {
-        token.name = user.name;
-        token.username = user.username;
-        token.image = user.image;
+        return {
+          ...token,
+          name: user.name,
+          picture: user.image,
+          username: user.username,
+        };
       }
 
       return token;
     },
-    async session({ session, token }) {
+    async session({ session, token, trigger }) {
       if (token.sub && session.user) {
         session.user.id = token.sub;
       }
       if (token.role && session.user && typeof token.username === "string") {
         session.user.username = token.username;
+      }
+      if (trigger === "update" && token.picture) {
+        session.user.image = token.picture;
       }
       return session;
     },
@@ -65,21 +72,10 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
       });
     },
     async signIn(message) {
-      // You can add additional logging or actions here
-      console.log("USER IS LOGGING IN ____________", message);
+      console.log("USER IS LOGGING IN");
     },
   },
   adapter: PrismaAdapter(db),
   session: { strategy: "jwt" },
   ...authConfig,
-  // providers: [
-  //   GitHub({
-  //     clientId: process.env.GITHUB_ID!,
-  //     clientSecret: process.env.GITHUB_SECRET!,
-  //   }),
-  //   Google({
-  //     clientId: process.env.GOOGLE_ID!,
-  //     clientSecret: process.env.GOOGLE_SECRET!,
-  //   }),
-  // ],
 });

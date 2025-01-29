@@ -9,7 +9,7 @@ export async function POST(req: Request) {
     const body = await req.json();
     const { content, image, conversationId } = body;
     // Validate required fields
-    console.log("in message postt");
+
     if (!content && !image) {
       return NextResponse.json(
         { error: "Content or image is required." },
@@ -39,7 +39,7 @@ export async function POST(req: Request) {
       where: { id: conversationId },
       include: { participants: true },
     });
-    console.log(conversation, "CONVERSATIONNNNNN");
+
     const receiverId = conversation?.participants.find(
       (p) => p.id !== userId
     )?.id;
