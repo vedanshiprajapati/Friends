@@ -43,6 +43,7 @@ export async function POST(req: Request) {
     const receiverId = conversation?.participants.find(
       (p) => p.id !== userId
     )?.id;
+
     if (!receiverId) {
       return NextResponse.json(
         { error: "Receiver not found" },

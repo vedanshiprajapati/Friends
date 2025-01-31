@@ -9,7 +9,7 @@ import {
 import { useSession } from "next-auth/react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { Header } from "../../_components/Chatbox/Header";
-import { MessageInput } from "../../_components/Chatbox/Messageinput";
+import { MessageInput } from "@/app/(protectedRoutes)/chat/_components/Chatbox/Messageinput";
 import Loader from "@/app/_components/Loader";
 import DynamicErrorCard from "@/app/_components/DynamicErrorcard";
 import SpaceInfo from "./SpaceInfo";

@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { X, Link, Bell, Users, Image } from "lucide-react";
-import { InviteCodeBox } from "./InviteCodeBox";
+import { X, Users, Image } from "lucide-react";
+import InviteCodeCard from "./InviteCodeCard";
 import { Space } from "@/app/types/space";
 
 const SpaceInfo = ({ space, onClose }: { space: any; onClose: () => void }) => {
@@ -28,7 +28,7 @@ const SpaceInfo = ({ space, onClose }: { space: any; onClose: () => void }) => {
         <p className="text-gray-600 mb-4">{space.description}</p>
 
         {/* Invite Link */}
-        <InviteCodeBox inviteCode={space.inviteCode} />
+        <InviteCodeCard inviteCode={space.inviteCode} />
       </div>
 
       {/* Tabs */}

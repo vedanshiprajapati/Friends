@@ -4,7 +4,7 @@ import React, { useEffect, useRef, useCallback } from "react";
 import { useMutation } from "@tanstack/react-query";
 import Loader from "@/app/_components/Loader";
 import { SpaceMessage } from "@/app/types/space";
-import SpaceMessageBox from "./spaceMessagebox";
+import SpaceMessageCard from "./spaceMessageCard";
 
 interface SpaceMessageListProps {
   id: string;
@@ -82,7 +82,7 @@ const SpaceMessageList = ({
           </div>
         )}
         {reversedMessages.map((msg, i) => (
-          <SpaceMessageBox
+          <SpaceMessageCard
             key={msg.id}
             msg={msg}
             currentUserId={currentUserId}

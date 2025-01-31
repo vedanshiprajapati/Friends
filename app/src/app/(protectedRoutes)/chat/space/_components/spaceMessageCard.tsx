@@ -5,17 +5,17 @@ import { Avatar, AvatarImage } from "@/app/_components/ui/Avatar";
 import { SPACE_CHARACTER_IMAGE } from "@/app/_data/constants";
 import { SpaceMessage } from "@/app/types/space";
 
-interface SpaceMessageBoxProps {
+interface SpaceMessageCardProps {
   msg: SpaceMessage;
   currentUserId: string;
   isLast: boolean;
 }
 
-const SpaceMessageBox = ({
+const SpaceMessageCard = ({
   msg,
   currentUserId,
   isLast,
-}: SpaceMessageBoxProps) => {
+}: SpaceMessageCardProps) => {
   const isOwnMessage = msg.sender.user.id === currentUserId;
 
   const formatMessageTime = (messageTime: string) => {
@@ -118,4 +118,4 @@ const SpaceMessageBox = ({
   );
 };
 
-export default SpaceMessageBox;
+export default SpaceMessageCard;

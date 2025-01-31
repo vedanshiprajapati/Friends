@@ -20,7 +20,7 @@ const MessageBox = ({
   chatType,
 }: MessageBoxProps) => {
   const isOwnMessage = msg?.sender?.id === currentUserId;
-  console.log(isOwnMessage, msg?.sender.id, currentUserId);
+
   // Add a check for msg.sender
   if (!msg.sender) {
     return null; // or render a fallback UI
@@ -36,7 +36,7 @@ const MessageBox = ({
     } else if (differenceInDays(now, messageTime) <= 7) {
       return format(messageTime, "EEEE HH:mm a");
     } else {
-      return format(messageTime, "yyyy-MM-dd HH:mm a");
+      return format(messageTime, "dd-MM-yyyy HH:mm a");
     }
   };
 

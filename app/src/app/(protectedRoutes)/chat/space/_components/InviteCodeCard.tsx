@@ -2,7 +2,7 @@
 import { CircleCheckBig, Copy, CopyCheck, Link } from "lucide-react";
 import { useState } from "react";
 
-export const InviteCodeBox = ({ inviteCode }: { inviteCode: string }) => {
+const InviteCodeCard = ({ inviteCode }: { inviteCode: string }) => {
   const [isCheck, setIsCheck] = useState(false);
 
   const handleCopyClick = (inviteCode: string) => {
@@ -42,3 +42,5 @@ export const InviteCodeBox = ({ inviteCode }: { inviteCode: string }) => {
     </div>
   );
 };
+
+export default InviteCodeCard;

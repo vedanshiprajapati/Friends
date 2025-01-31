@@ -2,7 +2,7 @@
 import Loader from "@/app/_components/Loader";
 import { useMutation } from "@tanstack/react-query";
 import { useCallback, useEffect, useRef, useState } from "react";
-import MessageBox from "@/app/(protectedRoutes)/chat/_components/Chatbox/Messagecard";
+import MessageCard from "./Messagecard";
 
 interface DmMessageListProps {
   id: string;
@@ -96,7 +96,7 @@ const DmMessageList = ({
           </div>
         )}
         {reversedMessages.map((msg, i) => (
-          <MessageBox
+          <MessageCard
             key={msg.id}
             chatType="dm"
             isLast={i === reversedMessages.length - 1}
