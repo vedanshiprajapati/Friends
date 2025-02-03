@@ -16,7 +16,6 @@ export type detailedDMsType = {
     sender: userType;
   };
 };
-[];
 
 export interface dmMessageType {
   id: string;

@@ -1,9 +1,10 @@
 "use client";
 
-import React, { useState, useRef, useEffect, useMemo } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { LogOut, User, Settings } from "lucide-react";
 import { signOut, useSession } from "next-auth/react";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
+import Image from "next/image";
 
 interface AvatarDropdownProps {
   className?: string;
@@ -14,7 +15,6 @@ interface AvatarDropdownProps {
 const AvatarDropdown: React.FC<AvatarDropdownProps> = ({
   className = "",
   size = "md",
-  position = "right",
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -71,8 +71,9 @@ const AvatarDropdown: React.FC<AvatarDropdownProps> = ({
           className={`relative ${sizeClasses[size]} rounded-full text-deepPurple flex items-center justify-center overflow-hidden shadow-xl`}
         >
           {src ? (
-            <img
+            <Image
               src={src}
+              alt={session.data?.user.name!}
               className="w-full h-full object-cover rounded-full border-0 shadow-md"
             />
           ) : (
@@ -91,8 +92,9 @@ const AvatarDropdown: React.FC<AvatarDropdownProps> = ({
           <div className="px-4 py-3 border-b border-lavender">
             <div>
               {src && (
-                <img
+                <Image
                   src={src}
+                  alt={session.data?.user.name!}
                   className="w-full h-full object-cover rounded-full border-0 shadow-md"
                 />
               )}

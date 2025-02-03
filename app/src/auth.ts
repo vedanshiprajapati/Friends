@@ -72,7 +72,7 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
       });
     },
     async signIn(message) {
-      console.log("USER IS LOGGING IN");
+      console.log("USER IS LOGGING IN", message);
     },
   },
   adapter: PrismaAdapter(db),

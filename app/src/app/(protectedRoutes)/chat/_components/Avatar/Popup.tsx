@@ -6,8 +6,11 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { X } from "lucide-react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { CldUploadButton } from "next-cloudinary";
-import { getSession, useSession } from "next-auth/react";
+import {
+  CldUploadButton,
+  CloudinaryUploadWidgetResults,
+} from "next-cloudinary";
+import { useSession } from "next-auth/react";
 
 // Define the schema for form validation
 const profileSchema = z.object({
