@@ -5,10 +5,8 @@ import { pusherServer } from "@/app/lib/pusher";
 
 export async function POST(req: Request) {
   try {
-    // Parse the request body
     const body = await req.json();
     const { content, image, conversationId } = body;
-    // Validate required fields
 
     if (!content && !image) {
       return NextResponse.json(
@@ -24,7 +22,6 @@ export async function POST(req: Request) {
       );
     }
 
-    // Authenticate the user
     const token = await getToken({ req: req, secret: process.env.AUTH_SECRET });
     if (!token) {
       return NextResponse.json(
@@ -35,10 +32,22 @@ export async function POST(req: Request) {
 
     const userId = token.sub;
 
-    const conversation = await db.conversation.findUnique({
-      where: { id: conversationId },
-      include: { participants: true },
-    });
+    const [conversation, newMessage] = await Promise.all([
+      db.conversation.findUnique({
+        where: { id: conversationId },
+        include: { participants: true },
+      }),
+      db.directMessage.create({
+        data: {
+          content,
+          image,
+          conversation: { connect: { id: conversationId } },
+          sender: { connect: { id: userId } },
+          receiver: { connect: { id: userId } },
+          isReadList: [userId!],
+        },
+      }),
+    ]);
 
     const receiverId = conversation?.participants.find(
       (p) => p.id !== userId
@@ -51,29 +60,14 @@ export async function POST(req: Request) {
       );
     }
 
-    // Save the message to the database
-    const newMessage = await db.directMessage.create({
-      data: {
-        content,
-        image,
-        conversation: {
-          connect: { id: conversationId },
-        },
-        sender: {
-          connect: { id: userId },
-        },
-        receiver: {
-          connect: { id: receiverId },
-        },
-        isReadList: [userId!],
-      },
-    });
+    await Promise.all([
+      db.directMessage.update({
+        where: { id: newMessage.id },
+        data: { receiver: { connect: { id: receiverId } } },
+      }),
+      pusherServer.trigger(conversationId, "messages:new", { newMessage }),
+    ]);
 
-    await pusherServer.trigger(conversationId, "messages:new", {
-      newMessage,
-    });
-
-    // Return success response
     return NextResponse.json(newMessage, { status: 201 });
   } catch (error) {
     console.error("Error saving message:", error);
