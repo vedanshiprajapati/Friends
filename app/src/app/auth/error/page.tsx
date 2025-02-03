@@ -1,13 +1,16 @@
-"use client";
 import AuthErrorCard from "@/app/_components/AuthErrorcard";
 import { useSearchParams } from "next/navigation";
 import { Suspense } from "react";
 
-export default function () {
+function AuthErrorWrapper() {
   const params = useSearchParams();
+  return <AuthErrorCard error={params.get("error")!} />;
+}
+
+export default function Page() {
   return (
     <Suspense fallback={<div>Loading...</div>}>
-      <AuthErrorCard error={params.get("error")!} />
+      <AuthErrorWrapper />
     </Suspense>
   );
 }
