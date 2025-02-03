@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 import { getToken } from "next-auth/jwt";
 import { db } from "@/app/lib/db";
-import { pusherServer } from "@/app/lib/pusher";
 
 export async function POST(req: Request) {
   try {
@@ -12,13 +11,13 @@ export async function POST(req: Request) {
     // Validate required fields
     if (!content && !image) {
       return NextResponse.json(
-        { error: "Content or image is required." },
+        { message: "Content or image is required.", status: "error" },
         { status: 400 }
       );
     }
     if (!spaceId) {
       return NextResponse.json(
-        { error: "Space ID is required." },
+        { message: "Space ID is required.", status: "error" },
         { status: 400 }
       );
     }
@@ -84,8 +83,8 @@ export async function POST(req: Request) {
       },
     });
 
-    // In your space message POST endpoint
-    await pusherServer.trigger(spaceId, "messages:new", { newMessage });
+    // // In your space message POST endpoint
+    // await pusherServer.trigger(spaceId, "messages:new", { newMessage });
 
     // // When marking messages as read
     // await pusherServer.trigger(`space-${spaceId}`, "message:read", {

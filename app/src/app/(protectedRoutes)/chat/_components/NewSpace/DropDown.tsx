@@ -9,11 +9,15 @@ import {
 } from "lucide-react";
 
 export const NewSpaceDropdown = ({
-  isPopup,
-  setIsPopup,
+  isNewSpacePopup,
+  setIsNewSpacePopup,
+  isInvitePopup,
+  setIsInvitePopup,
 }: {
-  isPopup: boolean;
-  setIsPopup: React.Dispatch<React.SetStateAction<boolean>>;
+  isNewSpacePopup: boolean;
+  setIsNewSpacePopup: React.Dispatch<React.SetStateAction<boolean>>;
+  isInvitePopup: boolean;
+  setIsInvitePopup: React.Dispatch<React.SetStateAction<boolean>>;
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement | null>(null);
@@ -73,14 +77,15 @@ export const NewSpaceDropdown = ({
           className="absolute top-0 w-64 left-full ml-2 bg-white border border-lavender z-1 text-deepPurple"
         >
           <div className="p-2">
-            {DropdownOptions.map((item) => {
+            {DropdownOptions.map((item, index) => {
               return (
                 <DropdownItem
                   title={item.title}
                   icon={item.icon}
                   key={item.title}
                   onClick={() => {
-                    item.onClick(setIsPopup);
+                    index === 0 && item.onClick(setIsNewSpacePopup);
+                    index === 2 && item.onClick(setIsInvitePopup);
                     setIsOpen(false);
                   }}
                 />
@@ -97,8 +102,10 @@ const DropdownOptions = [
   {
     icon: Users,
     title: "Create a space",
-    onClick: (setIsPopup: React.Dispatch<React.SetStateAction<boolean>>) => {
-      setIsPopup(true);
+    onClick: (
+      setIsNewSpacePopup: React.Dispatch<React.SetStateAction<boolean>>
+    ) => {
+      setIsNewSpacePopup(true);
     },
   },
   {
@@ -112,8 +119,10 @@ const DropdownOptions = [
   {
     icon: MessageCirclePlus,
     title: "use Invite Code",
-    onClick: () => {
-      console.log("Add one or more people");
+    onClick: (
+      setIsInvitePopup: React.Dispatch<React.SetStateAction<boolean>>
+    ) => {
+      setIsInvitePopup(true);
     },
   },
 ];

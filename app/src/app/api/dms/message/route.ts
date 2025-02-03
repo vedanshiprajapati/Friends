@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 import { getToken } from "next-auth/jwt";
 import { db } from "@/app/lib/db";
-import { pusherServer } from "@/app/lib/pusher";
 
 export async function POST(req: Request) {
   try {
@@ -67,10 +66,6 @@ export async function POST(req: Request) {
         },
         isReadList: [userId!],
       },
-    });
-
-    await pusherServer.trigger(conversationId, "messages:new", {
-      newMessage,
     });
 
     // Return success response

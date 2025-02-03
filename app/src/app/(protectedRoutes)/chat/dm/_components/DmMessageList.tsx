@@ -51,7 +51,10 @@ const DmMessageList = ({
   // Scroll to bottom on initial load
   useEffect(() => {
     if (isInitialLoad && messages.length > 0) {
-      bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+      bottomRef.current?.scrollIntoView({
+        block: "start",
+        behavior: "smooth",
+      });
       setIsInitialLoad(false);
     }
   }, [messages, isInitialLoad]);

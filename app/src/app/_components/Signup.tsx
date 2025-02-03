@@ -1,6 +1,15 @@
 "use client";
 import React, { useState } from "react";
-import { Lock, Mail, MoveLeft, User, Coffee, ArrowRight } from "lucide-react";
+import {
+  Lock,
+  Mail,
+  MoveLeft,
+  User,
+  Coffee,
+  ArrowRight,
+  EyeClosed,
+  Eye,
+} from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
@@ -16,7 +25,7 @@ type SignupSchemaType = z.infer<typeof StrictRegisterSchema>;
 const SignupPage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-
+  const [show, setShow] = useState(false);
   const {
     register,
     handleSubmit,
@@ -150,7 +159,7 @@ const SignupPage: React.FC = () => {
                   color="#674188"
                 />
                 <input
-                  type="password"
+                  type={show ? "text" : "password"}
                   placeholder="Password(Required)"
                   {...register("password")}
                   disabled={isLoading}
@@ -163,6 +172,12 @@ const SignupPage: React.FC = () => {
                       : "2px solid #674188",
                   }}
                 />
+                <div
+                  className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 cursor-pointer"
+                  onClick={() => setShow(!show)}
+                >
+                  {show ? <EyeClosed /> : <Eye />}
+                </div>
               </div>
               {errors.password && (
                 <p className="text-red-500 text-sm">

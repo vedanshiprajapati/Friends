@@ -1,5 +1,4 @@
 import { db } from "@/app/lib/db";
-import { pusherServer } from "@/app/lib/pusher";
 import { getToken } from "next-auth/jwt";
 import { NextResponse } from "next/server";
 interface Iparams {

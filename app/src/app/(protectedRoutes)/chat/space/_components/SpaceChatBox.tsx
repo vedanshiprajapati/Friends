@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useCallback, useEffect, useMemo } from "react";
+import React, { useCallback, useEffect, useMemo, useRef } from "react";
 import {
   useInfiniteQuery,
   useQuery,
@@ -16,7 +16,7 @@ import SpaceInfo from "./SpaceInfo";
 import { postSpaceMessage } from "@/app/_data/util";
 import SpaceMessageList from "./SpaceMessageList";
 import { getDetailedSpaceData } from "@/app/_actions/getDetailedSpaceData";
-import { pusherClient } from "@/app/lib/pusher";
+import supabase from "@/app/lib/supabase";
 
 // Fetch messages function
 const fetchMessages = async ({
@@ -42,7 +42,8 @@ const SpaceChatBox = ({ id }: { id: string }) => {
   const searchParams = useSearchParams();
   const router = useRouter();
   const queryClient = useQueryClient();
-
+  const channelRef = useRef<any>(null);
+  const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
   const showInfo = useMemo(
     () => searchParams.get("info") === "true",
     [searchParams]
@@ -68,42 +69,59 @@ const SpaceChatBox = ({ id }: { id: string }) => {
     initialPageParam: null,
   });
 
-  // Handle new message from Pusher
-  const handleNewMessage = useCallback(
-    (newMessage: any) => {
-      queryClient.setQueryData(["spaceMessages", id], (oldData: any) => {
-        if (!oldData?.pages?.length) return oldData;
-
-        // Create a new pages array with the new message added to the first page
-        const newPages = [...oldData.pages];
-        const firstPage = { ...newPages[0] };
-
-        // Add the new message to the beginning of the first page's messages
-        firstPage.messages = [newMessage.newMessage, ...firstPage.messages];
-        newPages[0] = firstPage;
-
-        return {
-          ...oldData,
-          pages: newPages,
-        };
-      });
-    },
-    [queryClient, id]
-  );
-
-  // Subscribe to Pusher channel
   useEffect(() => {
     if (!id) return;
 
-    // Subscribe to the conversation channel
-    const channel = pusherClient.subscribe(id);
-    channel.bind("messages:new", handleNewMessage);
+    // Cleanup previous channel and timer
+    if (channelRef.current) {
+      supabase.removeChannel(channelRef.current);
+    }
+    if (debounceTimerRef.current) {
+      clearTimeout(debounceTimerRef.current);
+    }
+
+    const channel = supabase
+      .channel(`space_messages:${id}`)
+      .on(
+        "postgres_changes",
+        {
+          event: "INSERT",
+          schema: "public",
+          table: "SpaceMessage",
+          filter: `spaceId=eq.${id}`,
+        },
+        (payload) => {
+          // DEBOUNCE IMPLEMENTATION HERE
+          if (debounceTimerRef.current) {
+            clearTimeout(debounceTimerRef.current);
+          }
+
+          debounceTimerRef.current = setTimeout(() => {
+            queryClient.setQueryData(["spaceMessages", id], (oldData: any) => {
+              if (!oldData?.pages?.length) return oldData;
+              const newPages = [...oldData.pages];
+              const firstPage = { ...newPages[0] };
+              firstPage.messages = [payload.new, ...firstPage.messages];
+              newPages[0] = firstPage;
+              return { ...oldData, pages: newPages };
+            });
+          }, 500); // 500ms delay
+        }
+      )
+      .subscribe();
+
+    channelRef.current = channel;
 
     return () => {
-      channel.unbind("messages:new", handleNewMessage);
-      pusherClient.unsubscribe(id);
+      // Cleanup channel and timer
+      if (channelRef.current) {
+        supabase.removeChannel(channelRef.current);
+      }
+      if (debounceTimerRef.current) {
+        clearTimeout(debounceTimerRef.current);
+      }
     };
-  }, [id, handleNewMessage]);
+  }, [id, queryClient]);
 
   // Combine all messages for SpaceInfo
   const allMessages = useMemo(() => {

@@ -51,7 +51,7 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
 
       return token;
     },
-    async session({ session, token, trigger }) {
+    async session({ session, token, trigger, user }) {
       if (token.sub && session.user) {
         session.user.id = token.sub;
       }
@@ -61,6 +61,7 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
       if (trigger === "update" && token.picture) {
         session.user.image = token.picture;
       }
+
       return session;
     },
   },

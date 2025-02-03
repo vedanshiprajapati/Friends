@@ -1,5 +1,5 @@
 "use client";
-import React, { useMemo, useEffect, useCallback } from "react";
+import React, { useMemo, useEffect, useCallback, useRef } from "react";
 import {
   useInfiniteQuery,
   useQuery,
@@ -15,9 +15,9 @@ import DmMessageList from "./DmMessageList";
 import { getDetailedDmData } from "@/app/_actions/getDetailedDmData";
 import DynamicErrorCard from "@/app/_components/DynamicErrorcard";
 import { postDmMessage } from "@/app/_data/util";
-import { pusherClient } from "@/app/lib/pusher"; // Make sure to import your Pusher client
+import supabase from "@/app/lib/supabase";
 
-// Fetch messages function
+// Fetch messages function remains the same
 const fetchMessages = async ({
   pageParam = null,
   id,
@@ -41,13 +41,14 @@ const DmChatBox = ({ id }: { id: string }) => {
   const searchParams = useSearchParams();
   const router = useRouter();
   const queryClient = useQueryClient();
+  const channelRef = useRef<any>(null);
 
   const showInfo = useMemo(
     () => searchParams.get("info") === "true",
     [searchParams]
   );
 
-  // Main conversation data query
+  // Main conversation data query remains the same
   const { data: conversationData, isLoading: isLoadingConversation } = useQuery(
     {
       queryKey: ["DetailedDmData", id],
@@ -55,7 +56,7 @@ const DmChatBox = ({ id }: { id: string }) => {
     }
   );
 
-  // Messages infinite query
+  // Messages infinite query remains the same
   const {
     data: messagesData,
     fetchNextPage,
@@ -63,50 +64,55 @@ const DmChatBox = ({ id }: { id: string }) => {
     isFetchingNextPage,
     isLoading: isLoadingMessages,
   } = useInfiniteQuery({
-    queryKey: ["messages", id],
+    queryKey: ["dmMessages", id],
     queryFn: ({ pageParam }) => fetchMessages({ pageParam, id }),
     getNextPageParam: (lastPage) => lastPage.nextCursor ?? undefined,
     initialPageParam: null,
   });
 
-  // Handle new message from Pusher
-  const handleNewMessage = useCallback(
-    (newMessage: any) => {
-      queryClient.setQueryData(["messages", id], (oldData: any) => {
-        if (!oldData?.pages?.length) return oldData;
-
-        // Create a new pages array with the new message added to the first page
-        const newPages = [...oldData.pages];
-        const firstPage = { ...newPages[0] };
-
-        // Add the new message to the beginning of the first page's messages
-        firstPage.messages = [newMessage.newMessage, ...firstPage.messages];
-        newPages[0] = firstPage;
-
-        return {
-          ...oldData,
-          pages: newPages,
-        };
-      });
-    },
-    [queryClient, id]
-  );
-
-  // Subscribe to Pusher channel
   useEffect(() => {
     if (!id) return;
 
-    // Subscribe to the conversation channel
-    const channel = pusherClient.subscribe(id);
-    channel.bind("messages:new", handleNewMessage);
+    // Cleanup previous channel
+    if (channelRef.current) {
+      supabase.removeChannel(channelRef.current);
+    }
+
+    const channel = supabase
+      .channel(`direct_message:${id}`)
+      .on(
+        "postgres_changes",
+        {
+          event: "INSERT",
+          schema: "public",
+          table: "DirectMessage",
+          filter: `conversationId=eq.${id}`,
+        },
+        (payload) => {
+          // Update query data
+          queryClient.setQueryData(["dmMessages", id], (oldData: any) => {
+            if (!oldData?.pages?.length) return oldData;
+            const newPages = [...oldData.pages];
+            const firstPage = { ...newPages[0] };
+            firstPage.messages = [payload.new, ...firstPage.messages];
+            newPages[0] = firstPage;
+            return { ...oldData, pages: newPages };
+          });
+        }
+      )
+      .subscribe();
+
+    channelRef.current = channel;
 
     return () => {
-      channel.unbind("messages:new", handleNewMessage);
-      pusherClient.unsubscribe(id);
+      if (channelRef.current) {
+        supabase.removeChannel(channelRef.current);
+        channelRef.current = null;
+      }
     };
-  }, [id, handleNewMessage]);
+  }, [id, queryClient]);
 
-  // Combine all messages for DmInfo
+  // Combine all messages remains the same
   const allMessages = useMemo(() => {
     return messagesData?.pages.flatMap((page) => page.messages) ?? [];
   }, [messagesData]);

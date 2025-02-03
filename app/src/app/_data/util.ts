@@ -1,4 +1,6 @@
-// Function to post a DM message
+import { createClient } from "@supabase/supabase-js";
+import { getSession } from "next-auth/react";
+
 export const postDmMessage = async (
   content: string,
   id: string,

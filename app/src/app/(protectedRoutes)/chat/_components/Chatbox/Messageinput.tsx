@@ -1,9 +1,11 @@
 "use client";
 
 import { postDmImage } from "@/app/_data/util";
+import supabase from "@/app/lib/supabase";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import EmojiPicker, { EmojiClickData } from "emoji-picker-react";
 import { Image, Send, Smile } from "lucide-react";
+import { useSession } from "next-auth/react";
 import { CldUploadButton } from "next-cloudinary";
 import { useState, useRef, useEffect } from "react";
 
@@ -20,11 +22,13 @@ export const MessageInput = ({
 }: MessageInputProps) => {
   const [message, setMessage] = useState(""); // State for message input
   const [isUploading, setIsUploading] = useState(false);
+  const session = useSession();
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const emojiPickerRef = useRef<HTMLDivElement>(null);
   const queryClient = useQueryClient();
 
   // Close emoji picker when clicking outside
+
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
@@ -38,19 +42,34 @@ export const MessageInput = ({
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
+  // async (content: { text: string; image?: string }) => {
+  //   // Direct Supabase insert instead of API call
+  //   const { data, error } = await supabase
+  //     .from("DirectMessage")
+  //     .insert({
+  //       content: content.text,
+  //       conversationId: chatId,
+  //       senderId: session.data?.user.id,
+  //       image: content.image,
+  //     })
+  //     .select()
+  //     .single();
 
+  //   if (error) throw new Error(error.message);
+  //   return data;
+  // },
   const messageMutation = useMutation({
     mutationFn: (content: { text: string; image?: string }) =>
       onSendMessage(content.text, chatId, content.image),
-    // onSuccess: () => {
-    //   // Invalidate and refetch chat queries
-    //   queryClient.invalidateQueries({
-    //     queryKey: [
-    //       chatType === "dm" ? "IndividualDmData" : "IndividualSpaceData",
-    //       chatId,
-    //     ],
-    //   });
-    // },
+    onSuccess: () => {
+      // Invalidate and refetch chat queries
+      queryClient.invalidateQueries({
+        queryKey: [
+          chatType === "dm" ? "IndividualDmData" : "IndividualSpaceData",
+          chatId,
+        ],
+      });
+    },
   });
   const handleSendMessage = async () => {
     if (!message.trim() && !isUploading) return;
@@ -110,6 +129,11 @@ export const MessageInput = ({
           disabled={messageMutation.isPending || isUploading}
           value={message}
           onChange={(e) => setMessage(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              handleSendMessage();
+            }
+          }}
         />
 
         <div className="flex items-center space-x-2 px-2 border-none">

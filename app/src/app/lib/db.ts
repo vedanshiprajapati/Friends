@@ -1,8 +1,5 @@
 import { PrismaClient } from "@prisma/client";
-import { neonConfig } from "@neondatabase/serverless";
 
-// Configure Neon to use fetch for queries
-neonConfig.poolQueryViaFetch = true;
 declare global {
   var prisma: PrismaClient | undefined;
 }
