@@ -1,3 +1,4 @@
+"use client";
 import AuthErrorCard from "@/app/_components/AuthErrorcard";
 import { useSearchParams } from "next/navigation";
 import { Suspense } from "react";
