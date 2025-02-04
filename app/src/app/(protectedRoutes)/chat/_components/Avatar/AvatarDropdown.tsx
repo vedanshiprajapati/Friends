@@ -73,6 +73,8 @@ const AvatarDropdown: React.FC<AvatarDropdownProps> = ({
           {src ? (
             <Image
               src={src}
+              width={100}
+              height={100}
               alt={session.data?.user.name!}
               className="w-full h-full object-cover rounded-full border-0 shadow-md"
             />
@@ -94,6 +96,8 @@ const AvatarDropdown: React.FC<AvatarDropdownProps> = ({
               {src && (
                 <Image
                   src={src}
+                  width={100}
+                  height={100}
                   alt={session.data?.user.name!}
                   className="w-full h-full object-cover rounded-full border-0 shadow-md"
                 />
