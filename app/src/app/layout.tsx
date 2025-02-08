@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { Providers } from "./wrappers";
 import "./paper.css";
+import DeviceCheck from "@/app/_components/DeviceCheck";
+
 export const metadata: Metadata = {
   title: "Friends",
   description: "chat like you are in central perk",
@@ -15,7 +17,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <Providers>{children}</Providers>
+        <Providers>
+          <DeviceCheck>{children}</DeviceCheck>
+        </Providers>
       </body>
     </html>
   );
