@@ -1,10 +1,10 @@
 import { db } from "@/app/lib/db";
+import { auth } from "@/auth";
 import { NextApiResponse } from "next";
-import { getToken } from "next-auth/jwt";
 import { NextResponse } from "next/server";
 
 export async function GET(req: Request, res: NextApiResponse) {
-  const token = await getToken({ req: req, secret: process.env.AUTH_SECRET });
+  const token = await auth();
   if (!token) {
     return NextResponse.json(
       { message: "Unauthorized!", status: "error" },
@@ -12,7 +12,7 @@ export async function GET(req: Request, res: NextApiResponse) {
     );
   }
 
-  const userId = token?.sub;
+  const userId = token.user.id;
 
   try {
     const conversations = await db.conversation.findMany({

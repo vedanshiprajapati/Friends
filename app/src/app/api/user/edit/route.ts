@@ -1,11 +1,12 @@
 import { db } from "@/app/lib/db";
+import { auth } from "@/auth";
 import { NextApiResponse } from "next";
-import { getToken } from "next-auth/jwt";
+
 import { NextResponse } from "next/server";
 
 export async function POST(req: Request, res: NextApiResponse) {
   try {
-    const token = await getToken({ req: req, secret: process.env.AUTH_SECRET });
+    const token = await auth();
 
     if (!token) {
       return NextResponse.json(
@@ -13,7 +14,7 @@ export async function POST(req: Request, res: NextApiResponse) {
         { status: 401 }
       );
     }
-    const userId = token?.sub;
+    const userId = token.user.id;
 
     const { username, name, image } = await req.json();
 

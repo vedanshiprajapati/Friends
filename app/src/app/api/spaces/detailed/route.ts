@@ -1,11 +1,12 @@
 // /pages/api/groups/detailed.ts
 import { db } from "@/app/lib/db";
+import { auth } from "@/auth";
 import { NextApiRequest, NextApiResponse } from "next";
-import { getToken } from "next-auth/jwt";
+
 import { NextResponse } from "next/server";
 
 export async function GET(req: Request, res: NextApiResponse) {
-  const token = await getToken({ req: req, secret: process.env.AUTH_SECRET });
+  const token = await auth();
 
   if (!token) {
     return NextResponse.json(
@@ -14,7 +15,7 @@ export async function GET(req: Request, res: NextApiResponse) {
     );
   }
 
-  const userId = token?.sub;
+  const userId = token.user.id;
 
   try {
     const spaces = await db.space.findMany({

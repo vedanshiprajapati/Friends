@@ -1,14 +1,14 @@
 import { db } from "@/app/lib/db";
-import { getToken } from "next-auth/jwt";
+import { auth } from "@/auth";
+
 import { NextResponse } from "next/server";
 
 const MESSAGES_PER_PAGE = 20;
-
-export async function GET(
-  req: Request,
-  { params }: { params: { spaceId: string } }
-) {
-  const token = await getToken({ req, secret: process.env.AUTH_SECRET });
+interface Iparams {
+  spaceId: string;
+}
+export async function GET(req: Request, context: { params: Promise<Iparams> }) {
+  const token = await auth();
   if (!token) {
     return NextResponse.json(
       { message: "Unauthorized!", status: "error" },
@@ -16,8 +16,8 @@ export async function GET(
     );
   }
 
-  const currentUserId = token?.sub;
-  const { spaceId } = params;
+  const currentUserId = token.user.id;
+  const { spaceId } = await context.params;
   const cursor = new URL(req.url).searchParams.get("cursor");
 
   try {

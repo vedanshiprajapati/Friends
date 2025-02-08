@@ -6,9 +6,8 @@ const InviteCodeCard = ({ inviteCode }: { inviteCode: string }) => {
   const [isCheck, setIsCheck] = useState(false);
 
   const handleCopyClick = (inviteCode: string) => {
-    const inviteLink = `https://yourapp.com/invite/${inviteCode}`;
     navigator.clipboard
-      .writeText(inviteLink)
+      .writeText(inviteCode)
       .then(() => {
         setIsCheck(true);
         setTimeout(() => setIsCheck(false), 1000);

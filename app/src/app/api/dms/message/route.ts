@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
-import { getToken } from "next-auth/jwt";
 import { db } from "@/app/lib/db";
 import { pusherServer } from "@/app/lib/pusher";
+import { auth } from "@/auth";
 
 export async function POST(req: Request) {
   try {
@@ -22,7 +22,7 @@ export async function POST(req: Request) {
       );
     }
 
-    const token = await getToken({ req: req, secret: process.env.AUTH_SECRET });
+    const token = await auth();
     if (!token) {
       return NextResponse.json(
         { message: "Unauthorized!", status: "error" },
@@ -30,7 +30,7 @@ export async function POST(req: Request) {
       );
     }
 
-    const userId = token.sub;
+    const userId = token.user.id;
 
     const [conversation, newMessage] = await Promise.all([
       db.conversation.findUnique({

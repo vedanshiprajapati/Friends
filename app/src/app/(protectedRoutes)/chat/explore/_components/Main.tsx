@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import DmChatBox from "../../dm/_components/DmChatBox";
 import Loader from "@/app/_components/Loader";
 import DynamicErrorCard from "@/app/_components/DynamicErrorcard";
+import Image from "next/image";
 
 const ExplorePage = () => {
   const router = useRouter();
@@ -108,8 +109,10 @@ const ExplorePage = () => {
                 className="p-3 cursor-pointer transition-all duration-200 flex items-center gap-3 hover:bg-lightPurple2"
               >
                 {user.image ? (
-                  <img
+                  <Image
                     src={user.image}
+                    height={100}
+                    width={100}
                     alt={user.name || "User"}
                     className="w-10 h-10 rounded-full flex-shrink-0"
                   />

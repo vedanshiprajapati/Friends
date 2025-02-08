@@ -8,6 +8,7 @@ import { FriendsRole } from "@prisma/client";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { spaceSchema } from "@/schemas";
+import Image from "next/image";
 
 // Infer the type of the form data from the schema
 type SpaceFormData = z.infer<typeof spaceSchema>;
@@ -220,8 +221,10 @@ const PopUp = ({
                     }`}
                   >
                     <div className="aspect-square rounded-lg bg-cream mb-2 flex items-center justify-center">
-                      <img
+                      <Image
                         src={character.avatar}
+                        height={100}
+                        width={100}
                         alt={character.name}
                         className="w-full h-full object-cover rounded-lg"
                       />

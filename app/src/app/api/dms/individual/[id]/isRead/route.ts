@@ -1,6 +1,5 @@
 import { db } from "@/app/lib/db";
-import { pusherServer } from "@/app/lib/pusher";
-import { getToken } from "next-auth/jwt";
+import { auth } from "@/auth";
 import { NextResponse } from "next/server";
 interface Iparams {
   id: string;
@@ -9,7 +8,7 @@ export async function POST(
   req: Request,
   context: { params: Promise<Iparams> }
 ) {
-  const token = await getToken({ req: req, secret: process.env.AUTH_SECRET });
+  const token = await auth();
 
   // Check if the user is authenticated
   if (!token) {
@@ -19,7 +18,7 @@ export async function POST(
     );
   }
 
-  const currentUserId = token.sub;
+  const currentUserId = token.user.id;
   const { id: conversationId } = await context.params;
 
   try {

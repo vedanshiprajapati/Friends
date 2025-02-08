@@ -11,6 +11,7 @@ import {
   CloudinaryUploadWidgetResults,
 } from "next-cloudinary";
 import { useSession } from "next-auth/react";
+import Image from "next/image";
 
 // Define the schema for form validation
 const profileSchema = z.object({
@@ -148,8 +149,10 @@ const EditProfilePopup = ({
               </label>
               <div className="mt-2">
                 {imagePreview && (
-                  <img
+                  <Image
                     src={imagePreview}
+                    width={100}
+                    height={100}
                     alt="Profile Preview"
                     className="w-24 h-24 rounded-full object-cover mb-2"
                   />

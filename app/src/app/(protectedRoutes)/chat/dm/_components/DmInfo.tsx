@@ -1,8 +1,9 @@
 import React from "react";
-import { X, Image, AtSign, CircleCheckBig } from "lucide-react";
+import { X, Image as ImageIcon, AtSign, CircleCheckBig } from "lucide-react";
 import { useState } from "react";
 import { otherUser } from "@/app/types/user";
 import { dmMessageType } from "@/app/types/dm";
+import Image from "next/image";
 
 const DmInfo = ({
   data,
@@ -41,7 +42,13 @@ const DmInfo = ({
       <div className="p-4 border-b border-lavender">
         <div className="w-full aspect-square shadow-sm rounded-lg flex items-center justify-center mb-4">
           {data.otherUser.image && (
-            <img src={data.otherUser.image} className="border-0" />
+            <Image
+              src={data.otherUser.image}
+              className="border-0 w-full"
+              alt="Avatar"
+              width={100}
+              height={100}
+            />
           )}
         </div>
         <h3 className="text-2xl font-bold mb-1">{data.otherUser.name}</h3>
@@ -76,7 +83,7 @@ const DmInfo = ({
       <div className="flex border-b border-lavender">
         <div className="flex-1 p-2 text-sm font-medium border-b-2 border-purple-600 text-purple-600">
           <div className="flex items-center justify-center gap-2">
-            <Image className="w-4 h-4" />
+            <ImageIcon className="w-4 h-4" />
             <span>Media</span>
           </div>
         </div>
@@ -95,8 +102,10 @@ const DmInfo = ({
                     className="aspect-square bg-gray-100 rounded-lg overflow-hidden"
                   >
                     {msg.image && (
-                      <img
+                      <Image
                         src={msg.image}
+                        width={100}
+                        height={100}
                         alt=""
                         className="w-full h-full object-cover"
                       />

@@ -24,9 +24,9 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
   },
   callbacks: {
     async jwt({ token, user, trigger, session }) {
-      if (!token.sub) return token;
+      if (!token.user.id) return token;
 
-      const existingUser = await getUserById(token.sub);
+      const existingUser = await getUserById(token.user.id);
       if (!existingUser || "error" in existingUser) return token;
 
       token.username = existingUser.username;
@@ -52,8 +52,8 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
       return token;
     },
     async session({ session, token, trigger }) {
-      if (token.sub && session.user) {
-        session.user.id = token.sub;
+      if (token.user.id && session.user) {
+        session.user.id = token.user.id;
       }
       if (token.role && session.user && typeof token.username === "string") {
         session.user.username = token.username;

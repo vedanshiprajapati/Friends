@@ -1,10 +1,11 @@
 import { db } from "@/app/lib/db";
+import { auth } from "@/auth";
 import { NextApiResponse } from "next";
-import { getToken } from "next-auth/jwt";
+
 import { NextResponse } from "next/server";
 
 export async function POST(req: Request, res: NextApiResponse) {
-  const token = await getToken({ req: req, secret: process.env.AUTH_SECRET });
+  const token = await auth();
 
   if (!token) {
     return NextResponse.json(
@@ -13,7 +14,7 @@ export async function POST(req: Request, res: NextApiResponse) {
     );
   }
 
-  const senderId = token?.sub!!;
+  const senderId = token.user.id!!;
 
   const { username } = await req.json();
   try {

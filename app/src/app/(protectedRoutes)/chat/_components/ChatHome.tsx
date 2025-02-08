@@ -16,10 +16,12 @@ import NewSpacePopUp from "./NewSpace/Popup";
 import AvatarDropdown from "./Avatar/AvatarDropdown";
 import EditProfilePopup from "./Avatar/Popup";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import InviteCodePopup from "./NewSpace/InvitePopup";
 
 // Main Component
 const ChatHome = ({ children }: { children: ReactNode }) => {
-  const [isOpen, setIsOpen] = useState(false);
+  const [isNewSpaceOpen, setIsNewSpaceOpen] = useState(false);
+  const [isInviteOpen, setIsInviteOpen] = useState(false);
   const router = useRouter();
   const path = usePathname();
   const searchParams = useSearchParams();
@@ -41,7 +43,12 @@ const ChatHome = ({ children }: { children: ReactNode }) => {
           </div>
         </div>
         <div className="p-4">
-          <NewSpaceDropdown isPopup={isOpen} setIsPopup={setIsOpen} />
+          <NewSpaceDropdown
+            isNewSpacePopup={isNewSpaceOpen}
+            setIsNewSpacePopup={setIsNewSpaceOpen}
+            isInvitePopup={isInviteOpen}
+            setIsInvitePopup={setIsInviteOpen}
+          />
         </div>
 
         {/* Sidebar Navigation */}
@@ -91,7 +98,15 @@ const ChatHome = ({ children }: { children: ReactNode }) => {
 
         {/* Content */}
         <div className="flex-1 justify-center items-center bg-white rounded-t-2xl">
-          {isOpen && <NewSpacePopUp isOpen onClose={() => setIsOpen(false)} />}
+          {isNewSpaceOpen && (
+            <NewSpacePopUp isOpen onClose={() => setIsNewSpaceOpen(false)} />
+          )}
+          {isInviteOpen && (
+            <InviteCodePopup
+              isOpen={isInviteOpen}
+              onClose={() => setIsInviteOpen(false)}
+            />
+          )}
           {isProfileOpen && (
             <EditProfilePopup
               isOpen={isProfileOpen}

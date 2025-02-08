@@ -10,6 +10,7 @@ import { formatDistanceToNow } from "date-fns";
 import { Check, Users } from "lucide-react";
 import { useSession } from "next-auth/react";
 import DynamicErrorCard from "@/app/_components/DynamicErrorcard";
+import Image from "next/image";
 
 const Main = () => {
   const session = useSession();
@@ -84,8 +85,10 @@ const Main = () => {
         }`}
       >
         {image ? (
-          <img
+          <Image
             src={image}
+            height={100}
+            width={100}
             alt={name || "User"}
             className="w-10 h-10 rounded-full flex-shrink-0 border-0"
           />

@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
-import { getToken } from "next-auth/jwt";
+
 import { db } from "@/app/lib/db";
 import { pusherServer } from "@/app/lib/pusher";
+import { auth } from "@/auth";
 
 export async function POST(req: Request) {
   try {
@@ -24,7 +25,7 @@ export async function POST(req: Request) {
     }
 
     // Authenticate the user
-    const token = await getToken({ req: req, secret: process.env.AUTH_SECRET });
+    const token = await auth();
     if (!token) {
       return NextResponse.json(
         { message: "Unauthorized!", status: "error" },
@@ -32,7 +33,7 @@ export async function POST(req: Request) {
       );
     }
 
-    const userId = token.sub;
+    const userId = token.user.id;
 
     // Get the space to validate membership and fetch the SpaceMember ID
     const space = await db.space.findUnique({

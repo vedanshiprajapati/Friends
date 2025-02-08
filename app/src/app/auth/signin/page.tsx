@@ -9,3 +9,8 @@ const signinPage = () => {
 };
 
 export default signinPage;
+
+// {
+//   "source": "/api/:path*",
+//   "destination": "/api/:path*"
+// },

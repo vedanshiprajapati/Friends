@@ -1,11 +1,11 @@
 import { db } from "@/app/lib/db";
-import { getToken } from "next-auth/jwt";
+import { auth } from "@/auth";
 import { NextResponse } from "next/server";
 interface Iparams {
   id: string;
 }
 export async function GET(req: Request, context: { params: Promise<Iparams> }) {
-  const token = await getToken({ req: req, secret: process.env.AUTH_SECRET });
+  const token = await auth();
   if (!token) {
     return NextResponse.json(
       { message: "Unauthorized!", status: "error" },
@@ -13,7 +13,7 @@ export async function GET(req: Request, context: { params: Promise<Iparams> }) {
     );
   }
 
-  const currentUserId = token?.sub;
+  const currentUserId = token.user.id;
   const { id } = await context.params;
   const conversationId = id;
 

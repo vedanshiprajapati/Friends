@@ -104,11 +104,6 @@ const FriendsLandingPage: React.FC = () => {
             }}
             // onClick={() => setSelectedCharacter(character.name)}
           >
-            {/* <img
-              src={character.avatar}
-              alt={character.name}
-              className="mx-auto mb-4 rounded-full w-32 h-32 object-cover"
-            /> */}
             <Image
               src={character.avatar}
               alt="ross"

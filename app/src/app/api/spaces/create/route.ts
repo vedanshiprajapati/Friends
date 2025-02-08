@@ -1,19 +1,20 @@
 import { db } from "@/app/lib/db";
+import { auth } from "@/auth";
 import { NextApiResponse } from "next";
-import { getToken } from "next-auth/jwt";
+
 import { NextResponse } from "next/server";
 
 export async function POST(req: Request, res: NextApiResponse) {
-  const token = await getToken({ req: req, secret: process.env.AUTH_SECRET });
+  const token = await auth();
 
-  if (!token || !token.sub) {
+  if (!token || !token.user.id) {
     return NextResponse.json(
       { message: "Unauthorized!", status: "error" },
       { status: 401 }
     );
   }
 
-  const userId = token.sub;
+  const userId = token.user.id;
   try {
     const { name, description, isPrivate, isRandom, role } = await req.json();
     const image = "/group-image.png";
