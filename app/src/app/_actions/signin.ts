@@ -19,7 +19,7 @@ export const signin = async (
     throw new Error("Invalid Credentials");
   }
 
-  const { email, password, code } = validatedFields.data;
+  const { email, password } = validatedFields.data;
 
   const existingUser = await getUserByEmail(email);
 

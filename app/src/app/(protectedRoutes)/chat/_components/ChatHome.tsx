@@ -1,4 +1,5 @@
 "use client";
+export const dynamic = "force-dynamic";
 import React, { ReactNode, useMemo, useState } from "react";
 import {
   Search,
@@ -17,11 +18,13 @@ import AvatarDropdown from "./Avatar/AvatarDropdown";
 import EditProfilePopup from "./Avatar/Popup";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import InviteCodePopup from "./NewSpace/InvitePopup";
+import { useSession } from "next-auth/react";
 
 // Main Component
 const ChatHome = ({ children }: { children: ReactNode }) => {
   const [isNewSpaceOpen, setIsNewSpaceOpen] = useState(false);
   const [isInviteOpen, setIsInviteOpen] = useState(false);
+  const session = useSession();
   const router = useRouter();
   const path = usePathname();
   const searchParams = useSearchParams();
@@ -29,6 +32,7 @@ const ChatHome = ({ children }: { children: ReactNode }) => {
     () => searchParams.get("editProfile") === "true",
     [path, searchParams]
   );
+  console.log(session);
   return (
     <div className="flex h-screen bg-lightCream">
       {/* Sidebar */}

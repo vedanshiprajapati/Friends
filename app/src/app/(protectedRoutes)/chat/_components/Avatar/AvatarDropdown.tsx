@@ -23,7 +23,7 @@ const AvatarDropdown: React.FC<AvatarDropdownProps> = ({
   const route = useRouter();
   const searchParams = useSearchParams();
   const showProfile = searchParams.get("editProfile") === "true";
-
+  console.log(session, "SESSSIOn");
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (

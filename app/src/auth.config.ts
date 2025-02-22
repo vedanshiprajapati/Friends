@@ -30,23 +30,30 @@ export default {
       },
     }),
     Credentials({
+      id: "credentials",
+      name: "Credentials",
+      type: "credentials",
+      credentials: {
+        email: {},
+        password: {},
+      },
       async authorize(credentials) {
-        const validatedFields = LoginSchema.safeParse(credentials);
-
-        console.log("in authorize function");
-        if (validatedFields.success) {
-          const { email, password } = validatedFields.data;
-
-          const user = await getUserByEmail(email);
-          if (!user || !user.password) throw new Error("use OAuth Account");
-
-          if (password === user.password) {
-            return user;
-          } else {
-            throw new Error("Invalid Password!");
-          }
+        if (!credentials?.email || !credentials?.password) {
+          throw new Error("Invalid credentials");
         }
-        throw new Error("Invalid Credentials");
+
+        const { email, password } = credentials as {
+          email: string;
+          password: string;
+        };
+
+        const user = await getUserByEmail(email);
+        if (!user || !user.password) throw new Error("use OAuth Account");
+
+        if (password !== user.password) {
+          throw new Error("Invalid password");
+        }
+        return user;
       },
     }),
   ],
