@@ -1,5 +1,7 @@
 import Loader from "../_components/Loader";
 
 export default function () {
-  <Loader />;
+  <div className="h-screen flex justify-center items-center">
+    <Loader />
+  </div>;
 }

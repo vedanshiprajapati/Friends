@@ -5,7 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { StrictLoginSchema } from "@/schemas";
 import { signin } from "@/app/_actions/signin";
-import { signIn } from "next-auth/react";
+import { signIn, useSession } from "next-auth/react";
 import { DEFAULT_LOGIN_REDIRECT } from "@/routes";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -14,6 +14,7 @@ import { z } from "zod";
 type LoginSchemaType = z.infer<typeof StrictLoginSchema>;
 
 const LoginPage: React.FC = () => {
+  const session = useSession();
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -33,6 +34,8 @@ const LoginPage: React.FC = () => {
 
       if (response?.status === "error") {
         setError(response.message);
+      } else {
+        session.update();
       }
     } catch (err) {
       setError("An unexpected error occurred");

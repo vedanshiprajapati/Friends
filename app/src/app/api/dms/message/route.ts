@@ -4,6 +4,8 @@ import { pusherServer } from "@/app/lib/pusher";
 import { auth } from "@/auth";
 
 export async function POST(req: Request) {
+  const startTime = Date.now();
+
   try {
     const body = await req.json();
     const { content, image, conversationId } = body;
@@ -32,26 +34,20 @@ export async function POST(req: Request) {
 
     const userId = token.user.id;
 
-    const [conversation, newMessage] = await Promise.all([
-      db.conversation.findUnique({
+    // ✅ Fetch only the receiver ID instead of the whole conversation
+    const receiverId = await db.conversation
+      .findUnique({
         where: { id: conversationId },
-        include: { participants: true },
-      }),
-      db.directMessage.create({
-        data: {
-          content,
-          image,
-          conversation: { connect: { id: conversationId } },
-          sender: { connect: { id: userId } },
-          receiver: { connect: { id: userId } },
-          isReadList: [userId!],
+        select: {
+          participants: {
+            select: { id: true },
+          },
         },
-      }),
-    ]);
-
-    const receiverId = conversation?.participants.find(
-      (p) => p.id !== userId
-    )?.id;
+      })
+      .then(
+        (conversation) =>
+          conversation?.participants.find((p) => p.id !== userId)?.id
+      );
 
     if (!receiverId) {
       return NextResponse.json(
@@ -60,14 +56,23 @@ export async function POST(req: Request) {
       );
     }
 
-    await Promise.all([
-      db.directMessage.update({
-        where: { id: newMessage.id },
-        data: { receiver: { connect: { id: receiverId } } },
-      }),
-      pusherServer.trigger(conversationId, "messages:new", { newMessage }),
-    ]);
+    // ✅ Create the message with the correct sender & receiver in a single step
+    const newMessage = await db.directMessage.create({
+      data: {
+        content,
+        image,
+        conversation: { connect: { id: conversationId } },
+        sender: { connect: { id: userId } },
+        receiver: { connect: { id: receiverId } },
+        isReadList: [userId!],
+      },
+    });
 
+    const pusherStart = Date.now();
+    await pusherServer.trigger(conversationId, "messages:new", { newMessage });
+    console.log("Pusher Execution Time:", Date.now() - pusherStart, "ms");
+
+    console.log("API Execution Time:", Date.now() - startTime, "ms");
     return NextResponse.json(newMessage, { status: 201 });
   } catch (error) {
     console.error("Error saving message:", error);
