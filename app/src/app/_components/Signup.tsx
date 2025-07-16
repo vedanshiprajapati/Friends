@@ -200,7 +200,7 @@ const SignupPage: React.FC = () => {
           >
             <p className="px-2">Sign up with </p>
             <Image
-              src={"/googleLogo.png"}
+              src="/googleLogo.png"
               alt="google logo"
               height={30}
               width={30}

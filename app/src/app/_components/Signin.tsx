@@ -192,7 +192,7 @@ const LoginPage: React.FC = () => {
           >
             <p className="px-2">Sign in with </p>
             <Image
-              src={"/googleLogo.png"}
+              src="/googleLogo.png"
               alt="google logo"
               height={30}
               width={30}

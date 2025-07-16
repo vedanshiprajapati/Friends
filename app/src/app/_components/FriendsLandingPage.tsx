@@ -78,8 +78,8 @@ const FriendsLandingPage: React.FC = () => {
         <div className="block mr-6">
           <div className="w-full max-w-md h-96 rounded-xl flex items-center justify-center bg-purple border-4 border-deepPurple px-8">
             <Image
-              src={"/group-image.png"}
-              alt="ross"
+              src="/group-image.png"
+              alt="group-image"
               className="rounded-xl border w-auto"
               width={400}
               height={300}
@@ -106,7 +106,7 @@ const FriendsLandingPage: React.FC = () => {
           >
             <Image
               src={character.avatar}
-              alt="ross"
+              alt={character.name}
               className="mx-auto mb-4 rounded-full w-32 h-36 object-cover"
               width={50}
               height={60}

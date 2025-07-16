@@ -13,6 +13,7 @@ export default auth((req) => {
   const { nextUrl } = req;
   const isLoggedin = !!req.auth;
 
+  console.log("🔐 req.auth =", req.auth);
   console.log("Path:", nextUrl.pathname, " | Logged In:", isLoggedin);
 
   if (nextUrl.pathname.startsWith(apiAuthPrefix)) return;
@@ -39,5 +40,5 @@ export default auth((req) => {
 });
 
 export const config = {
-  matcher: ["/((?!_next/static|_next/image|favicon.ico).*)"],
+  matcher: ["/((?!api|_next/static|_next/image|favicon.ico).*)"],
 };
