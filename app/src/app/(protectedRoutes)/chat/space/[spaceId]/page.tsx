@@ -1,3 +1,4 @@
+"use client";
 import SpaceChatBox from "@/app/(protectedRoutes)/chat/space/_components/SpaceChatBox";
 import { useRouter } from "next/router";
 

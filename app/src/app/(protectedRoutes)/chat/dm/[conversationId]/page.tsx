@@ -1,3 +1,4 @@
+"use client";
 import { useRouter } from "next/router";
 import DmChatBox from "../_components/DmChatBox";
 
