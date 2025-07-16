@@ -192,11 +192,11 @@ const LoginPage: React.FC = () => {
           >
             <p className="px-2">Sign in with </p>
             <Image
-              src="/googleLogo.png"
+              src="https://res.cloudinary.com/dvoyx9axk/image/upload/v1752675988/u8cl9vuxbvjohxyysn3y.png"
               alt="google logo"
               height={30}
               width={30}
-              className="p-1"
+              className="p-1 border-0"
             />
           </button>
 

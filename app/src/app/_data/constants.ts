@@ -1,37 +1,43 @@
 export const FRIENDS_CHARACTERS = [
   {
     name: "ROSS",
-    avatar: "/ross.png",
+    avatar:
+      "https://res.cloudinary.com/dvoyx9axk/image/upload/v1752675792/bhkw4vepsogqunaxshtt.png",
     quote: "We were on a break!",
     backgroundColor: "#674188",
   },
   {
     name: "RACHEL",
-    avatar: "/rachel.png",
+    avatar:
+      "https://res.cloudinary.com/dvoyx9axk/image/upload/v1752675765/wqix5z6pk1jrbdfjogtt.png",
     quote: "No uterus, no opinion.",
     backgroundColor: "#C8A1E0",
   },
   {
     name: "CHANDLER",
-    avatar: "/chandler.png",
+    avatar:
+      "https://res.cloudinary.com/dvoyx9axk/image/upload/v1752675949/nyiqxns1hq5ycipwhrol.png",
     quote: "Could I BE any more sarcastic?",
     backgroundColor: "#E2BFD9",
   },
   {
     name: "MONICA",
-    avatar: "/monica.png",
+    avatar:
+      "https://res.cloudinary.com/dvoyx9axk/image/upload/v1752675726/qfcgepeewulvud2cxa8s.png",
     quote: "I know!",
     backgroundColor: "#674188",
   },
   {
     name: "JOEY",
-    avatar: "/joey.png",
+    avatar:
+      "https://res.cloudinary.com/dvoyx9axk/image/upload/v1752675695/m0upop6yg940xend3h7f.png",
     quote: "How you doin'?",
     backgroundColor: "#C8A1E0",
   },
   {
     name: "PHOEBE",
-    avatar: "/phoebe.png",
+    avatar:
+      "https://res.cloudinary.com/dvoyx9axk/image/upload/v1752675898/ulwbaqv6qrfab8ita4e3.png",
     quote: "Oh. My. God.",
     backgroundColor: "#E2BFD9",
   },
