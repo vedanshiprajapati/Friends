@@ -108,14 +108,13 @@ const DropdownOptions = [
       setIsNewSpacePopup(true);
     },
   },
-  {
-    icon: MessageSquare,
-    title: "Join random space",
-    onClick: () => {
-      console.log("Add one or more people");
-    },
-  },
-
+  // {
+  //   icon: MessageSquare,
+  //   title: "Join random space",
+  //   onClick: () => {
+  //     console.log("Add one or more people");
+  //   },
+  // },
   {
     icon: MessageCirclePlus,
     title: "use Invite Code",

@@ -63,6 +63,13 @@ export const MessageInput = ({
     }
   };
 
+  const handleKeyPress = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      handleSendMessage();
+    }
+  };
+
   const handleEmojiClick = (emojiData: EmojiClickData) => {
     setMessage((prev) => prev + emojiData.emoji);
     setShowEmojiPicker(false);
@@ -103,13 +110,14 @@ export const MessageInput = ({
           />
         </CldUploadButton>
 
-        <input
-          type="text"
+        <textarea
           placeholder={`Message ${chatType === "space" ? "space" : ""}`}
-          className="flex-1 px-4 py-2 bg-transparent focus:outline-none rounded-full"
+          className="flex-1 px-4 py-2 bg-transparent focus:outline-none rounded-full resize-none min-h-[40px] max-h-[120px] overflow-y-auto"
           disabled={messageMutation.isPending || isUploading}
           value={message}
           onChange={(e) => setMessage(e.target.value)}
+          onKeyDown={handleKeyPress}
+          rows={1}
         />
 
         <div className="flex items-center space-x-2 px-2 border-none">

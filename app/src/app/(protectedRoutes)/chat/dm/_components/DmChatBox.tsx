@@ -36,6 +36,7 @@ const fetchMessages = async ({
 };
 
 const DmChatBox = ({ id }: { id: string }) => {
+  console.log("DM CHAT BOX");
   const session = useSession();
   const currentUserId = session.data?.user.id!;
   const searchParams = useSearchParams();

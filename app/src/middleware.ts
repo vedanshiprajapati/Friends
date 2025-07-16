@@ -5,37 +5,48 @@ import {
   authRoutes,
   DEFAULT_LOGIN_REDIRECT,
   publicRoutes,
-  protectedRoutes, // Add this
+  protectedRoutes,
 } from "./routes";
 
 const { auth } = NextAuth(authConfig);
 export default auth((req) => {
   const { nextUrl } = req;
+  const pathname = nextUrl.pathname;
   const isLoggedin = !!req.auth;
 
-  console.log("🔐 req.auth =", req.auth);
-  console.log("Path:", nextUrl.pathname, " | Logged In:", isLoggedin);
+  let action = "No action (allowed)";
 
-  if (nextUrl.pathname.startsWith(apiAuthPrefix)) return;
-
-  if (authRoutes.includes(nextUrl.pathname)) {
-    if (isLoggedin) {
-      return Response.redirect(new URL(DEFAULT_LOGIN_REDIRECT, nextUrl));
-    }
+  // Skip API auth routes
+  if (pathname.startsWith(apiAuthPrefix)) {
+    console.log(`✅ [${pathname}] | API auth route - allowed`);
     return;
   }
 
+  // If user tries to visit sign-in or sign-up routes
+  if (authRoutes.includes(pathname)) {
+    if (isLoggedin) {
+      action = `🔁 Redirected to ${DEFAULT_LOGIN_REDIRECT} (already logged in)`;
+      console.log(`🔐 [${pathname}] | Logged In: ${isLoggedin} | ${action}`);
+      return Response.redirect(new URL(DEFAULT_LOGIN_REDIRECT, nextUrl));
+    } else {
+      action = "✅ Public auth route - allowed";
+      console.log(`🔐 [${pathname}] | Logged In: ${isLoggedin} | ${action}`);
+      return;
+    }
+  }
+
+  // Check if it's a protected route
   const isProtected = protectedRoutes.some((route) =>
-    nextUrl.pathname.startsWith(route)
+    pathname.startsWith(route)
   );
 
-  if (
-    !isLoggedin &&
-    (isProtected || !publicRoutes.includes(nextUrl.pathname))
-  ) {
+  if (!isLoggedin && (isProtected || !publicRoutes.includes(pathname))) {
+    action = "🔁 Redirected to /auth/signin (unauthenticated)";
+    console.log(`🔐 [${pathname}] | Logged In: ${isLoggedin} | ${action}`);
     return Response.redirect(new URL("/auth/signin", nextUrl));
   }
 
+  console.log(`✅ [${pathname}] | Logged In: ${isLoggedin} | ${action}`);
   return;
 });
 

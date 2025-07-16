@@ -32,7 +32,6 @@ const ChatHome = ({ children }: { children: ReactNode }) => {
     () => searchParams.get("editProfile") === "true",
     [path, searchParams]
   );
-  console.log(session);
   return (
     <div className="flex h-screen bg-lightCream">
       {/* Sidebar */}

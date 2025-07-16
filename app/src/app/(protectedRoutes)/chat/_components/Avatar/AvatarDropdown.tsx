@@ -23,7 +23,6 @@ const AvatarDropdown: React.FC<AvatarDropdownProps> = ({
   const route = useRouter();
   const searchParams = useSearchParams();
   const showProfile = searchParams.get("editProfile") === "true";
-  console.log(session, "SESSSIOn");
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
@@ -68,7 +67,7 @@ const AvatarDropdown: React.FC<AvatarDropdownProps> = ({
         className={`flex items-center space-x-2 focus:outline-none ${className}`}
       >
         <div
-          className={`relative ${sizeClasses[size]} rounded-full text-deepPurple flex items-center justify-center overflow-hidden shadow-xl`}
+          className={`relative ${sizeClasses[size]} rounded-full text-deepPurple flex items-center justify-center overflow-hidden shadow-xl cursor-pointer`}
         >
           {src ? (
             <Image

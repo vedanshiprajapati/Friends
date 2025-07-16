@@ -6,10 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { X } from "lucide-react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import {
-  CldUploadButton,
-  CloudinaryUploadWidgetResults,
-} from "next-cloudinary";
+import { CldUploadButton } from "next-cloudinary";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
 

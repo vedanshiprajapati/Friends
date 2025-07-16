@@ -96,7 +96,7 @@ const ExplorePage = () => {
           {!isLoading && !searchResults && (
             <div className="flex flex-col justify-center items-center h-full -mt-16">
               <p className="text-lg font-medium mb-2">Find your Friends!</p>
-              <p className="text-sm">
+              <p className="text-sm text-center">
                 Search and select a user to start a conversation
               </p>
             </div>
