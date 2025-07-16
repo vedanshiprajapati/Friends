@@ -15,6 +15,8 @@ export default auth((req) => {
   const isLoggedin = !!req.auth;
 
   let action = "No action (allowed)";
+  console.log("PATHNAME : ", pathname);
+  console.log("isLoggedIn", isLoggedin);
 
   // Skip API auth routes
   if (pathname.startsWith(apiAuthPrefix)) {
