@@ -1,10 +1,6 @@
 import { CollapsibleSection } from "@/app/(protectedRoutes)/chat/_components/CollapsibleSection/CollapsibleSection";
 import { getBasicSpaceData } from "@/app/_actions/getBasicSpaceData";
-import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-} from "@/app/_components/ui/Avatar";
+import { Avatar, AvatarImage } from "@/app/_components/ui/Avatar";
 import { DEFAULT_SPACE_IMAGE } from "@/app/_data/constants";
 import { useQuery } from "@tanstack/react-query";
 import { usePathname, useRouter } from "next/navigation";
