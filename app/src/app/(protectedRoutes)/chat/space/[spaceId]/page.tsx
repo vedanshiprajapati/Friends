@@ -1,14 +1,17 @@
 "use client";
 import SpaceChatBox from "@/app/(protectedRoutes)/chat/space/_components/SpaceChatBox";
-import { useRouter } from "next/router";
-
+import { useParams } from "next/navigation";
 interface Iparams {
   spaceId: string;
 }
 
-export default async function () {
-  const router = useRouter();
-  const spaceId = router.query.slug as string;
-  console.log(spaceId, "/space/[id] > SpaceId");
+export default function () {
+  const params = useParams();
+  const spaceId = params.spaceId as string;
+
+  if (!spaceId) {
+    return <p>not valid space page!</p>;
+  }
+
   return <SpaceChatBox id={spaceId} />;
 }
