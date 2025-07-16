@@ -7,6 +7,9 @@ export const getDetailedSpaceData = async () => {
   const session = await auth();
   const userId = session?.user.id;
   const spaces = await db.space.findMany({
+    orderBy: {
+      updatedAt: "desc",
+    },
     where: {
       members: {
         some: { userId },
