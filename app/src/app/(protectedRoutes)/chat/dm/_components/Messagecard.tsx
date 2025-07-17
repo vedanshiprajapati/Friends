@@ -1,6 +1,5 @@
 import React from "react";
 import { format, isToday, isYesterday, differenceInDays } from "date-fns";
-import { Message } from "@/app/types/message";
 import Image from "next/image";
 import { Avatar, AvatarImage } from "@/app/_components/ui/Avatar";
 import { dmMessageType } from "@/app/types/dm";

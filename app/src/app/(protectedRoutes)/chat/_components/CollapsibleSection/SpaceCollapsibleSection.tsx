@@ -15,6 +15,7 @@ export const SpaceCollapsibleSection = () => {
   });
   const handleClick = (id: string) => {
     const params = new URLSearchParams(searchParams);
+    params.delete("conversationId");
     params.set("spaceId", id);
     route.push(`/chat/space?${params.toString()}`);
   };

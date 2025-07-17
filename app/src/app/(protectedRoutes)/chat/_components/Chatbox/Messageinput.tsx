@@ -42,15 +42,15 @@ export const MessageInput = ({
   const messageMutation = useMutation({
     mutationFn: (content: { text: string; image?: string }) =>
       onSendMessage(content.text, chatId, content.image),
-    // onSuccess: () => {
-    //   // Invalidate and refetch chat queries
-    //   queryClient.invalidateQueries({
-    //     queryKey: [
-    //       chatType === "dm" ? "IndividualDmData" : "IndividualSpaceData",
-    //       chatId,
-    //     ],
-    //   });
-    // },
+    onSuccess: () => {
+      // Invalidate and refetch chat queries
+      queryClient.invalidateQueries({
+        queryKey: [
+          chatType === "dm" ? "IndividualDmData" : "IndividualSpaceData",
+          chatId,
+        ],
+      });
+    },
   });
   const handleSendMessage = async () => {
     if (!message.trim() && !isUploading) return;

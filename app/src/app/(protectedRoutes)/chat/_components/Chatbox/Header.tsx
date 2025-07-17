@@ -78,8 +78,10 @@ export const Header = ({ user, spaceData, id }: HeaderProps) => {
             onClick={() => {
               const params = new URLSearchParams(searchParams);
               if (headerContent.isSpace) {
+                params.delete("conversationId");
                 params.set("spaceId", id);
               } else {
+                params.delete("spaceId");
                 params.set("conversationId", id);
               }
               route.push(
@@ -125,13 +127,7 @@ export const Header = ({ user, spaceData, id }: HeaderProps) => {
 
         <div className="ml-auto flex items-center space-x-4 ">
           {headerContent.isSpace && (
-            <button
-              className="p-2 rounded-full"
-              aria-label="Members"
-              onClick={() =>
-                route.push(`/chat/space/${headerContent.spaceId}/management`)
-              }
-            >
+            <button className="p-2 rounded-full" aria-label="Members">
               <Users size={20} className="" />
             </button>
           )}

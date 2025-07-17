@@ -85,7 +85,7 @@ export const NewSpaceDropdown = ({
                   key={item.title}
                   onClick={() => {
                     index === 0 && item.onClick(setIsNewSpacePopup);
-                    index === 2 && item.onClick(setIsInvitePopup);
+                    index === 1 && item.onClick(setIsInvitePopup);
                     setIsOpen(false);
                   }}
                 />

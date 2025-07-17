@@ -6,7 +6,7 @@ import { Lock, ArrowRight, X } from "lucide-react";
 import { SPACE_CHARACTER_IMAGE } from "@/app/_data/constants";
 import { FriendsRole } from "@prisma/client";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { spaceSchema } from "@/schemas";
 import Image from "next/image";
 
@@ -49,6 +49,7 @@ const PopUp = ({
 }) => {
   const [step, setStep] = useState(1);
   const route = useRouter();
+  const searchParams = useSearchParams();
   const {
     register,
     handleSubmit,
@@ -76,7 +77,10 @@ const PopUp = ({
       queryClient.invalidateQueries({
         queryKey: ["BasicSpaceData"],
       });
-      route.push(`/chat/space/${data?.data?.id}`);
+      const params = new URLSearchParams(searchParams);
+      params.delete("conversationId");
+      params.set("spaceId", data.data.id);
+      route.push(`/chat/space?${params.toString()}`);
     },
     onError: (error) => {
       console.error("Error creating space:", error);

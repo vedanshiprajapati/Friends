@@ -5,16 +5,17 @@ import { auth } from "@/auth";
 
 export async function POST(req: Request) {
   try {
+    // Parse the request body
     const body = await req.json();
     const { content, image, conversationId } = body;
 
+    // Validate required fields
     if (!content && !image) {
       return NextResponse.json(
         { error: "Content or image is required." },
         { status: 400 }
       );
     }
-
     if (!conversationId) {
       return NextResponse.json(
         { error: "Conversation ID is required." },
@@ -22,6 +23,7 @@ export async function POST(req: Request) {
       );
     }
 
+    // Authenticate the user
     const token = await auth();
     if (!token) {
       return NextResponse.json(
@@ -32,47 +34,101 @@ export async function POST(req: Request) {
 
     const userId = token.user.id;
 
-    const [conversation, newMessage] = await Promise.all([
-      db.conversation.findUnique({
-        where: { id: conversationId },
-        include: { participants: true },
-      }),
-      db.directMessage.create({
-        data: {
-          content,
-          image,
-          conversation: { connect: { id: conversationId } },
-          sender: { connect: { id: userId } },
-          receiver: { connect: { id: userId } },
-          isReadList: [userId!],
+    // Get conversation and find receiver in one query
+    const conversation = await db.conversation.findUnique({
+      where: { id: conversationId },
+      include: {
+        participants: {
+          select: {
+            id: true,
+            name: true,
+            username: true,
+            image: true,
+          },
         },
-      }),
-    ]);
+      },
+    });
 
-    const receiverId = conversation?.participants.find(
-      (p) => p.id !== userId
-    )?.id;
-
-    if (!receiverId) {
+    if (!conversation) {
       return NextResponse.json(
-        { error: "Receiver not found" },
+        { error: "Conversation not found." },
         { status: 404 }
       );
     }
 
-    await Promise.all([
-      db.directMessage.update({
-        where: { id: newMessage.id },
-        data: { receiver: { connect: { id: receiverId } } },
-      }),
-      pusherServer.trigger(conversationId, "messages:new", { newMessage }),
-    ]);
+    // Check if user is a participant
+    const isParticipant = conversation.participants.some(
+      (p) => p.id === userId
+    );
+    if (!isParticipant) {
+      return NextResponse.json(
+        { error: "User is not a participant in this conversation." },
+        { status: 403 }
+      );
+    }
 
-    return NextResponse.json(newMessage, { status: 201 });
+    // Find receiver (the other participant)
+    const receiver = conversation.participants.find((p) => p.id !== userId);
+    if (!receiver) {
+      return NextResponse.json(
+        { error: "Receiver not found." },
+        { status: 404 }
+      );
+    }
+
+    // Create message with correct sender and receiver in one operation
+    const newMessage = await db.directMessage.create({
+      data: {
+        content,
+        image,
+        conversation: { connect: { id: conversationId } },
+        sender: { connect: { id: userId } },
+        receiver: { connect: { id: receiver.id } },
+        isReadList: [userId!],
+      },
+      include: {
+        sender: {
+          select: {
+            id: true,
+            name: true,
+            username: true,
+            image: true,
+          },
+        },
+        receiver: {
+          select: {
+            id: true,
+            name: true,
+            username: true,
+            image: true,
+          },
+        },
+      },
+    });
+
+    // Trigger Pusher event for real-time updates
+    await pusherServer.trigger(conversationId, "messages:new", {
+      newMessage,
+      conversationId,
+    });
+
+    // Return success response with included data
+    return NextResponse.json(
+      {
+        status: "success",
+        data: newMessage,
+        message: "Message sent successfully",
+      },
+      { status: 201 }
+    );
   } catch (error) {
     console.error("Error saving message:", error);
     return NextResponse.json(
-      { error: "Internal Server Error." },
+      {
+        message: "Internal Server Error.",
+        status: "error",
+        error: error instanceof Error ? error.message : "Unknown error",
+      },
       { status: 500 }
     );
   }

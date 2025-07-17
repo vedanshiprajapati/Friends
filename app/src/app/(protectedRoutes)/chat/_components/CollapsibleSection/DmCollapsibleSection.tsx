@@ -20,6 +20,7 @@ export const DmCollapsibleSection = () => {
 
   const handleClick = (id: string) => {
     const params = new URLSearchParams(searchParams);
+    params.delete("spaceId");
     params.set("conversationId", id);
     route.push(`/chat/dm?${params.toString()}`);
   };

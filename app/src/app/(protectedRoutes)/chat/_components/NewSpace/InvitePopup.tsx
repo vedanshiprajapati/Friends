@@ -6,7 +6,7 @@ import { X, ArrowRight } from "lucide-react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { FriendsRole } from "@prisma/client";
 import { SPACE_CHARACTER_IMAGE } from "@/app/_data/constants";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
 
@@ -79,6 +79,7 @@ const InviteCodePopup = ({
   const router = useRouter();
   const session = useSession();
   const queryClient = useQueryClient();
+  const searchParams = useSearchParams();
   // Form for invite code step
   const inviteForm = useForm<InviteCodeFormData>({
     resolver: zodResolver(inviteCodeSchema),
@@ -131,7 +132,10 @@ const InviteCodePopup = ({
         queryKey: ["BasicSpaceData", "DetailedSpaceData"],
       });
       onClose();
-      router.push(`/chat/space/${data.data.spaceId}`);
+      const params = new URLSearchParams(searchParams);
+      params.delete("conversationId");
+      params.set("spaceId", data.data.id);
+      router.push(`/chat/space?${params.toString()}`);
     },
     onError: () => {
       alert("Failed to join space. Please try again.");
@@ -308,7 +312,10 @@ const InviteCodePopup = ({
                 type="button"
                 onClick={() => {
                   onClose();
-                  router.push(`/chat/space/${spaceData.spaceId}`);
+                  const params = new URLSearchParams(searchParams);
+                  params.delete("conversationId");
+                  params.set("spaceId", spaceData.spaceId);
+                  router.push(`/chat/space?${params.toString()}`);
                 }}
                 className="px-4 py-2 bg-purple text-white rounded-lg"
               >
