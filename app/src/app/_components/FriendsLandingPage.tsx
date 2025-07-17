@@ -180,7 +180,8 @@ const FriendsLandingPage: React.FC = () => {
       {/* Footer */}
       <footer className="p-6 text-center bg-purple">
         <p className="text-sm" style={{ color: "#674188" }}>
-          © 2024 Friends Chat. Could we BE any more social?
+          © {new Date().getFullYear()} Friends Chat. Could we BE any more
+          social?
         </p>
       </footer>
     </div>
