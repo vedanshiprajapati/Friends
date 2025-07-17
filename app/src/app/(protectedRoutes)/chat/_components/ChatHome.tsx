@@ -91,7 +91,13 @@ const ChatHome = ({ children }: { children: ReactNode }) => {
             ></LogOutIcon>
           </form> */}
           <div className="flex items-center space-x-4">
-            <Settings size={20} className="text-deepPurple cursor-pointer" />
+            <Settings
+              size={20}
+              className="text-deepPurple cursor-pointer"
+              onClick={() => {
+                router.push("/settings");
+              }}
+            />
             <HelpCircle size={20} className="text-deepPurple cursor-pointer" />
             <AvatarDropdown />
           </div>
