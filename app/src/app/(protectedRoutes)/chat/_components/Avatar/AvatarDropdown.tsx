@@ -55,8 +55,7 @@ const AvatarDropdown: React.FC<AvatarDropdownProps> = ({
   };
 
   const handleLogout = async () => {
-    await signOut();
-    window.location.reload();
+    await signOut({ redirectTo: "/" });
     setIsOpen(false);
   };
 
