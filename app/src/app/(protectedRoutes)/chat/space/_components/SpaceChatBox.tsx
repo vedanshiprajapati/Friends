@@ -110,7 +110,12 @@ const SpaceChatBox = ({ id }: { id: string }) => {
     return messagesData?.pages.flatMap((page) => page.messages) ?? [];
   }, [messagesData]);
 
-  if (!id) return <p>Id is not given id: {id}</p>;
+  if (!id)
+    return (
+      <div className="h-full w-full flex justify-center items-center">
+        <DynamicErrorCard message="Id is not given" />
+      </div>
+    );
 
   if (isLoadingSpace || isLoadingMessages) {
     return (
@@ -131,7 +136,11 @@ const SpaceChatBox = ({ id }: { id: string }) => {
   const space = spaceData.find((space) => space.id === id);
 
   if (!space) {
-    return <div>no space found with this id: {id}</div>;
+    return (
+      <div className="h-full w-full flex justify-center items-center">
+        <DynamicErrorCard message="Space not found." />
+      </div>
+    );
   }
   return (
     <div className="flex flex-row h-[calc(100vh-4rem)]">

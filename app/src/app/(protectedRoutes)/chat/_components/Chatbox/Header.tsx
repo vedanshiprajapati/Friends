@@ -76,8 +76,16 @@ export const Header = ({ user, spaceData, id }: HeaderProps) => {
           <button
             className="p-2 hover:bg-purple/10 rounded-full"
             onClick={() => {
+              const params = new URLSearchParams(searchParams);
+              if (headerContent.isSpace) {
+                params.set("spaceId", id);
+              } else {
+                params.set("conversationId", id);
+              }
               route.push(
-                `/chat/${headerContent.isSpace ? "space" : "dm"}/${id}`
+                `/chat/${
+                  headerContent.isSpace ? "space" : "dm"
+                }?${params.toString()}`
               );
             }}
           >

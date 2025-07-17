@@ -3,17 +3,20 @@ import { getBasicSpaceData } from "@/app/_actions/getBasicSpaceData";
 import { Avatar, AvatarImage } from "@/app/_components/ui/Avatar";
 import { DEFAULT_SPACE_IMAGE } from "@/app/_data/constants";
 import { useQuery } from "@tanstack/react-query";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 export const SpaceCollapsibleSection = () => {
   const route = useRouter();
   const pathname = usePathname();
+  const searchParams = useSearchParams();
   const { data, isLoading } = useQuery({
     queryKey: ["BasicSpaceData"],
     queryFn: async () => await getBasicSpaceData(),
   });
   const handleClick = (id: string) => {
-    route.push(`/chat/space/${id}`);
+    const params = new URLSearchParams(searchParams);
+    params.set("spaceId", id);
+    route.push(`/chat/space?${params.toString()}`);
   };
   return (
     <div>

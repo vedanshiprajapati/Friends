@@ -134,7 +134,11 @@ const DmChatBox = ({ id }: { id: string }) => {
 
   const conversation = conversationData.find((dm) => dm.id === id);
   if (!conversation) {
-    return <p>Conversation not found.</p>;
+    return (
+      <div className="h-full w-full flex justify-center items-center">
+        <DynamicErrorCard message="Conversation not found." />
+      </div>
+    );
   }
 
   const otherUser = conversation.participants[0];

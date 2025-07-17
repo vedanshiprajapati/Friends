@@ -7,18 +7,21 @@ import {
 } from "@/app/_components/ui/Avatar";
 import { DEFAULT_PROFILE_IMAGE } from "@/app/_data/constants";
 import { useQuery } from "@tanstack/react-query";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 export const DmCollapsibleSection = () => {
   const route = useRouter();
   const pathname = usePathname();
+  const searchParams = useSearchParams();
   const { data, isLoading, isError } = useQuery({
     queryFn: async () => await getBasicDmdata(),
     queryKey: ["BasicDmData"],
   });
 
   const handleClick = (id: string) => {
-    route.push(`/chat/dm/${id}`);
+    const params = new URLSearchParams(searchParams);
+    params.set("conversationId", id);
+    route.push(`/chat/dm?${params.toString()}`);
   };
   return (
     <div>
