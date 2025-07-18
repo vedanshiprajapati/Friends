@@ -3,6 +3,7 @@ import "./globals.css";
 import { Providers } from "./wrappers";
 import "./paper.css";
 import DeviceCheck from "@/app/_components/DeviceCheck";
+import { Analytics } from "@vercel/analytics/next";
 
 export const metadata: Metadata = {
   title: "Friends",
@@ -20,6 +21,7 @@ export default function RootLayout({
         <Providers>
           <DeviceCheck>{children}</DeviceCheck>
         </Providers>
+        <Analytics />
       </body>
     </html>
   );
